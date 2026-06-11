@@ -1,0 +1,55 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.txt
+*.log
+
+# Dependency directories
+node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+**/dist/
+dist-ssr/
+**/dist-ssr/
+out.txt
+**/out.txt
+
+# Local env files (secrets)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.development
+.env.production
+.env.staging
+**/.env
+**/.env.local
+**/.env.*
+
+# Expo
+.expo/
+**/.expo/
+
+# Editor directories and files
+.vscode/
+**/.vscode/
+.idea/
+**/.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Temporary files
+tmp.json
+**/tmp.json

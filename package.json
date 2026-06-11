@@ -1,0 +1,20 @@
+{
+  "name": "subtrack",
+  "version": "1.0.0",
+  "description": "Firebase-based subscription tracking platform",
+  "private": true,
+  "workspaces": [
+    "firebase/functions"
+  ],
+  "scripts": {
+    "admin": "cd admin-web && npm run dev",
+    "mobile": "cd mobile-app && npx expo start",
+    "functions:build": "cd firebase/functions && npm run build",
+    "functions:deploy": "cd firebase && firebase deploy --only functions",
+    "deploy:rules": "cd firebase && firebase deploy --only firestore",
+    "deploy:hosting": "cd admin-web && npm run build && cd ../firebase && firebase deploy --only hosting"
+  },
+  "dependencies": {
+    "expo": "~54.0.33"
+  }
+}
