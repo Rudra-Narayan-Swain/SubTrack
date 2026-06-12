@@ -7,8 +7,12 @@
     "firebase/functions"
   ],
   "scripts": {
+    "user": "cd user-web && npm run dev",
     "admin": "cd admin-web && npm run dev",
     "mobile": "cd mobile-app && npx expo start",
+    "build:user": "cd user-web && npm run build",
+    "build:admin": "cd admin-web && npm run build",
+    "build:all": "npm run build:user && npm run build:admin",
     "functions:build": "cd firebase/functions && npm run build",
     "functions:deploy": "cd firebase && firebase deploy --only functions",
     "deploy:rules": "cd firebase && firebase deploy --only firestore",

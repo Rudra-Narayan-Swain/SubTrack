@@ -6,7 +6,7 @@ import {
     X, Check, AlertCircle, PlusCircle, CheckCircle2
 } from 'lucide-react';
 import { useStore } from '../../store/useStore';
-import { subscribeToSubscriptions, addSubscription, updateSubscription, deleteSubscription } from '../../services/subscriptionService';
+import { subscribeToSubscriptions, addSubscription, updateSubscription } from '../../services/subscriptionService';
 import { subscribeToPayments, addPayment } from '../../services/paymentService';
 import { formatCurrency, toMonthlyCost } from '../../utils/currencyUtils';
 import { formatDate, getDaysUntil, getNextBillingDate } from '../../utils/dateUtils';

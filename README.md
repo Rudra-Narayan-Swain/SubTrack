@@ -2,6 +2,14 @@
 
 > A modern subscription tracking platform built with Firebase, featuring a mobile app for users and an admin dashboard for management.
 
+## 🔗 Live Application Links
+Access the live platforms directly from your browser:
+- **📱 [Open User Web App](https://Rudra-Narayan-Swain.github.io/SubTrack/user/)**
+- **🖥️ [Open Admin Dashboard](https://Rudra-Narayan-Swain.github.io/SubTrack/admin/)**
+- **🌐 [Open Central Gateway Hub](https://Rudra-Narayan-Swain.github.io/SubTrack/)**
+
+---
+
 ## ✨ Features
 
 ### 📱 User App

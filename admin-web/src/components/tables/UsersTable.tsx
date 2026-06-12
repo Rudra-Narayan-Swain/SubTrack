@@ -22,7 +22,7 @@ export const UsersTable = ({ users, onEdit, onDelete }: Props) => {
                 </thead>
                 <tbody>
                     {users.map((user) => (
-                        <tr key={user.uid || user.id} className="border-b border-white/[0.04] table-row-hover">
+                        <tr key={user.uid} className="border-b border-white/[0.04] table-row-hover">
                             <td className="py-3.5 px-4">
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-500 to-purple-500 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
@@ -48,7 +48,7 @@ export const UsersTable = ({ users, onEdit, onDelete }: Props) => {
                                     )}
                                     {onDelete && (
                                         <button
-                                            onClick={() => onDelete(user.uid || user.id)}
+                                            onClick={() => onDelete(user.uid)}
                                             className="p-1.5 rounded-lg text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-all"
                                         >
                                             <Trash2 size={14} />

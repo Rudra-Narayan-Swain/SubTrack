@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SubTrack Hub 🔔 | Subscription Tracking Platform</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-color: #09090b;
+            --text-primary: #f4f4f5;
+            --text-secondary: #a1a1aa;
+            --accent-purple: #8b5cf6;
+            --accent-indigo: #6366f1;
+            --accent-emerald: #10b981;
+            --card-bg: rgba(24, 24, 27, 0.55);
+            --card-border: rgba(63, 63, 70, 0.4);
+            --card-hover-bg: rgba(39, 39, 42, 0.8);
+            --font-display: 'Outfit', sans-serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Abstract Background Glows */
+        .glow-bg {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(99, 102, 241, 0.05) 50%, transparent 100%);
+            top: -200px;
+            right: -100px;
+            z-index: 0;
+            pointer-events: none;
+            filter: blur(80px);
+        }
+
+        .glow-bg-2 {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, rgba(99, 102, 241, 0.02) 60%, transparent 100%);
+            bottom: -150px;
+            left: -150px;
+            z-index: 0;
+            pointer-events: none;
+            filter: blur(80px);
+        }
+
+        /* Page Container */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            z-index: 1;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Header / Hero Section */
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .logo-container {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(99, 102, 241, 0.15) 100%);
+            padding: 10px 20px;
+            border-radius: 9999px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.1);
+            margin-bottom: 24px;
+        }
+
+        .logo-icon {
+            color: var(--accent-purple);
+            animation: pulse-ring 2.5s infinite;
+        }
+
+        .logo-text {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: -0.025em;
+            background: linear-gradient(to right, #a78bfa, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: 3.2rem;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+            background: linear-gradient(to right, #ffffff, #e4e4e7, #a1a1aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Portal Cards Grid */
+        .portal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(800px circle at var(--x, 0px) var(--y, 0px), rgba(255, 255, 255, 0.05), transparent 40%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(139, 92, 246, 0.4);
+            background: var(--card-hover-bg);
+            box-shadow: 0 12px 30px -10px rgba(139, 92, 246, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon-wrapper {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            color: var(--accent-purple);
+            transition: all 0.3s;
+        }
+
+        .card:hover .card-icon-wrapper {
+            background: var(--accent-purple);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+            transform: scale(1.05);
+        }
+
+        /* Specific styles for User / Admin / Mobile colors */
+        .card.user-card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 12px 30px -10px rgba(99, 102, 241, 0.15);
+        }
+        .card.user-card:hover .card-icon-wrapper {
+            background: var(--accent-indigo);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .card.mobile-card:hover {
+            border-color: rgba(16, 185, 129, 0.4);
+            box-shadow: 0 12px 30px -10px rgba(16, 185, 129, 0.15);
+        }
+        .card.mobile-card:hover .card-icon-wrapper {
+            background: var(--accent-emerald);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 24px;
+            flex-grow: 1;
+        }
+
+        /* Actions / Buttons */
+        .card-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-indigo) 100%);
+            color: #ffffff;
+            border: none;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: scale(1.02);
+        }
+
+        /* Mobile Instructions Dropdown */
+        .instructions-toggle {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 12px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .instructions-toggle:hover {
+            color: var(--text-primary);
+        }
+
+        .instructions-content {
+            display: none;
+            margin-top: 16px;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #d4d4d8;
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        .instructions-content.show {
+            display: block;
+            animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .cmd-line {
+            color: var(--accent-emerald);
+        }
+
+        /* Platform Architecture Section */
+        .architecture-section {
+            background: rgba(24, 24, 27, 0.3);
+            border: 1px solid rgba(63, 63, 70, 0.2);
+            border-radius: 24px;
+            padding: 32px;
+            text-align: center;
+            margin-bottom: 40px;
+            backdrop-filter: blur(8px);
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+        }
+
+        .arch-title {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .arch-flow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .arch-node {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #e4e4e7;
+        }
+
+        .arch-arrow {
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 0 20px;
+            border-top: 1px solid rgba(63, 63, 70, 0.2);
+            margin-top: auto;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 1;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-purple);
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.98);
+                opacity: 0.8;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0.98);
+                opacity: 0.8;
+            }
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.3rem;
+            }
+            .portal-grid {
+                grid-template-columns: 1fr;
+            }
+            .arch-flow {
+                flex-direction: column;
+            }
+            .arch-arrow {
+                transform: rotate(90deg);
+                margin: 4px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="glow-bg"></div>
+    <div class="glow-bg-2"></div>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <header>
+            <div class="logo-container">
+                <i data-lucide="bell-ring" class="logo-icon"></i>
+                <span class="logo-text">SubTrack</span>
+            </div>
+            <h1>Unified Platform Portal</h1>
+            <p class="subtitle">Quickly launch user services, administrator configurations, or manage mobile application workflows from your centralized codebase repository.</p>
+        </header>
+
+        <!-- Main Portal Cards Grid -->
+        <div class="portal-grid">
+            <!-- User App Card -->
+            <div class="card user-card">
+                <div class="card-header">
+                    <div class="card-icon-wrapper">
+                        <i data-lucide="users"></i>
+                    </div>
+                    <h2 class="card-title">User Web App</h2>
+                </div>
+                <p class="card-description">The consumer interface allowing users to monitor active subscriptions, add payment transactions, check upcoming alerts, and view visual analytics.</p>
+                <div class="card-actions">
+                    <a href="./user/" class="btn btn-primary">
+                        <i data-lucide="external-link"></i> Open Live Web App
+                    </a>
+                    <a href="http://localhost:3000" target="_blank" class="btn btn-secondary">
+                        <i data-lucide="terminal"></i> Local Dev (Port 3000)
+                    </a>
+                </div>
+            </div>
+
+            <!-- Admin Dashboard Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon-wrapper">
+                        <i data-lucide="shield-check"></i>
+                    </div>
+                    <h2 class="card-title">Admin Dashboard</h2>
+                </div>
+                <p class="card-description">Administrative workspace for configuration settings, user management lists, broad notification broadcasts, and platform analytics summary.</p>
+                <div class="card-actions">
+                    <a href="./admin/" class="btn btn-primary">
+                        <i data-lucide="external-link"></i> Open Live Dashboard
+                    </a>
+                    <a href="http://localhost:3001" target="_blank" class="btn btn-secondary">
+                        <i data-lucide="terminal"></i> Local Dev (Port 3001)
+                    </a>
+                </div>
+            </div>
+
+            <!-- Mobile App Card -->
+            <div class="card mobile-card">
+                <div class="card-header">
+                    <div class="card-icon-wrapper">
+                        <i data-lucide="smartphone"></i>
+                    </div>
+                    <h2 class="card-title">Mobile Expo App</h2>
+                </div>
+                <p class="card-description">Expo-powered native iOS & Android subscription management app, designed for push alerts and mobile-first experience.</p>
+                <div class="card-actions">
+                    <button onclick="toggleInstructions()" class="btn btn-secondary">
+                        <i data-lucide="code"></i> How to Run Locally
+                    </button>
+                    <div id="instructions" class="instructions-content">
+                        <span class="cmd-line"># Navigate to directory</span><br>
+                        cd mobile-app<br><br>
+                        <span class="cmd-line"># Install dependencies</span><br>
+                        npm install<br><br>
+                        <span class="cmd-line"># Start Expo server</span><br>
+                        npx expo start
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Architecture / Framework Info -->
+        <div class="architecture-section">
+            <h3 class="arch-title">
+                <i data-lucide="network"></i> System Architecture Flow
+            </h3>
+            <div class="arch-flow">
+                <div class="arch-node">📱 Expo User App</div>
+                <div class="arch-arrow"><i data-lucide="chevrons-right"></i></div>
+                <div class="arch-node">💻 Vite React Hub (User & Admin)</div>
+                <div class="arch-arrow"><i data-lucide="chevrons-right"></i></div>
+                <div class="arch-node">🔥 Firebase Auth / Firestore / Cloud Functions</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-links">
+                <a href="https://github.com/Rudra-Narayan-Swain/SubTrack" target="_blank">
+                    <i data-lucide="github"></i> Repository
+                </a>
+                <a href="https://console.firebase.google.com/" target="_blank">
+                    <i data-lucide="database"></i> Firebase Console
+                </a>
+            </div>
+            <p>&copy; 2026 SubTrack Platform. Powered by Firebase, React, and Expo.</p>
+        </footer>
+    </div>
+
+    <!-- Mouse Highlight Effect & Lucide Init -->
+    <script>
+        lucide.createIcons();
+
+        // Add mouse-move highlight effect on cards
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--x', `${x}px`);
+                card.style.setProperty('--y', `${y}px`);
+            });
+        });
+
+        // Toggle mobile app instructions
+        function toggleInstructions() {
+            const content = document.getElementById('instructions');
+            content.classList.toggle('show');
+        }
+    </script>
+</body>
+</html>

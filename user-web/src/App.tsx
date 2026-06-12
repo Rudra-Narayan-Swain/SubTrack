@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase/firebaseConfig';
 import { getDocument } from './firebase/firestore';
@@ -99,7 +99,7 @@ export default function App() {
   }, [setUser, setLoadingAuth]);
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         {/* Public Routes */}
         <Route element={<PublicRoute><AuthLayout /></PublicRoute>}>
@@ -122,6 +122,6 @@ export default function App() {
         {/* Catch All */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
