@@ -6,7 +6,6 @@
 Access the live platforms directly from your browser:
 - **📱 [Open User Web App](https://Rudra-Narayan-Swain.github.io/SubTrack/user/)**
 - **🖥️ [Open Admin Dashboard](https://Rudra-Narayan-Swain.github.io/SubTrack/admin/)**
-- **📱 [Open Mobile Web Preview](https://Rudra-Narayan-Swain.github.io/SubTrack/mobile/)**
 - **🌐 [Open Central Gateway Hub](https://Rudra-Narayan-Swain.github.io/SubTrack/)**
 
 ---

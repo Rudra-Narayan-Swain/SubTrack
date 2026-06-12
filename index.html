@@ -543,14 +543,22 @@
                     <h2 class="card-title">Mobile Expo App</h2>
                 </div>
                 <p class="card-description">Expo-powered native iOS & Android subscription management app, designed for push alerts and mobile-first experience.</p>
-                <div class="card-actions">
-                    <a href="./mobile/" class="btn btn-primary">
-                        <i data-lucide="external-link"></i> Open Live Mobile Web
+                <div class="card-actions" style="align-items: center; text-align: center;">
+                    <!-- Dynamic QR Code Container -->
+                    <div class="qr-container" style="background: white; padding: 12px; border-radius: 12px; display: inline-block; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                        <img id="expo-qr" src="" alt="Expo Go QR Code" style="width: 140px; height: 140px; display: block;" />
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px; width: 100%;">
+                        <p style="font-weight: 600; color: white;">Expo Go URL:</p>
+                        <code id="expo-url" style="background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 6px; display: inline-block; margin-top: 4px; word-break: break-all; font-family: monospace; font-size: 0.8rem;">exp://localhost:8081</code>
+                    </div>
+                    <a id="expo-link" href="#" class="btn btn-primary" style="margin-bottom: 8px;">
+                        <i data-lucide="external-link"></i> Launch on Device
                     </a>
                     <button onclick="toggleInstructions()" class="btn btn-secondary">
-                        <i data-lucide="code"></i> How to Run Locally
+                        <i data-lucide="code"></i> View CLI Commands
                     </button>
-                    <div id="instructions" class="instructions-content">
+                    <div id="instructions" class="instructions-content" style="width: 100%;">
                         <span class="cmd-line"># Navigate to directory</span><br>
                         cd mobile-app<br><br>
                         <span class="cmd-line"># Install dependencies</span><br>
@@ -610,6 +618,28 @@
         function toggleInstructions() {
             const content = document.getElementById('instructions');
             content.classList.toggle('show');
+        }
+
+        // Dynamically set Expo QR code and links based on current hostname
+        const hostname = window.location.hostname || 'localhost';
+        const isGithubPages = hostname.includes('github.io');
+        
+        const qrImg = document.getElementById('expo-qr');
+        const urlCode = document.getElementById('expo-url');
+        const launchLink = document.getElementById('expo-link');
+        
+        if (isGithubPages) {
+            // On GitHub Pages, direct them to run locally for development URL
+            qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://github.com/Rudra-Narayan-Swain/SubTrack';
+            urlCode.textContent = 'Run locally to generate QR';
+            launchLink.href = 'https://github.com/Rudra-Narayan-Swain/SubTrack#mobile-app';
+            launchLink.innerHTML = '<i data-lucide="info"></i> Run locally for Expo Go';
+        } else {
+            // Running locally (localhost or LAN IP), generate direct exp link
+            const expoUrl = `exp://${hostname}:8081`;
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(expoUrl)}`;
+            urlCode.textContent = expoUrl;
+            launchLink.href = expoUrl;
         }
     </script>
 </body>
