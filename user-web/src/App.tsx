@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase/firebaseConfig';
-import { subscribeToDocument } from './firebase/firestore';
+import { subscribeToDocument, setDocument } from './firebase/firestore';
 import { useStore } from './store/useStore';
 import type { User } from './types';
 
@@ -73,11 +73,11 @@ export default function App() {
       if (firebaseUser) {
         setLoadingAuth(true);
         // Start real-time listener for the user doc
-        docUnsub = subscribeToDocument<User>('users', firebaseUser.uid, (userDoc) => {
+        docUnsub = subscribeToDocument<User>('users', firebaseUser.uid, async (userDoc) => {
           if (userDoc) {
             setUser({ ...userDoc, uid: userDoc.uid || firebaseUser.uid });
           } else {
-            setUser({
+            const defaultUser: User = {
               uid: firebaseUser.uid,
               name: firebaseUser.displayName || 'User',
               email: firebaseUser.email || '',
@@ -85,7 +85,13 @@ export default function App() {
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
               status: 'pending'
-            });
+            };
+            setUser(defaultUser);
+            try {
+              await setDocument('users', firebaseUser.uid, defaultUser);
+            } catch (err) {
+              console.warn('Failed to auto-create missing user profile document:', err);
+            }
           }
           setLoadingAuth(false);
         });
