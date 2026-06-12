@@ -1,5 +1,5 @@
 import { useState, FormEvent } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { signIn } from '../../firebase/auth';
 import { Eye, EyeOff, Mail, Lock, Loader2 } from 'lucide-react';
 
