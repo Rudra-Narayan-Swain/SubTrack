@@ -548,6 +548,13 @@
                     <div class="qr-container" style="background: white; padding: 12px; border-radius: 12px; display: inline-block; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
                         <img id="expo-qr" src="" alt="Expo Go QR Code" style="width: 140px; height: 140px; display: block;" />
                     </div>
+                    
+                    <!-- Dynamic IP Input field for Expo -->
+                    <div style="margin-bottom: 12px; width: 100%;">
+                        <label for="local-ip" style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">Local IP (for Expo Go):</label>
+                        <input type="text" id="local-ip" placeholder="e.g. 192.168.1.100" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 6px 12px; font-size: 0.8rem; color: white; width: 80%; text-align: center; font-family: monospace;" />
+                    </div>
+
                     <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px; width: 100%;">
                         <p style="font-weight: 600; color: white;">Expo Go URL:</p>
                         <code id="expo-url" style="background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 6px; display: inline-block; margin-top: 4px; word-break: break-all; font-family: monospace; font-size: 0.8rem;">exp://localhost:8081</code>
@@ -620,27 +627,37 @@
             content.classList.toggle('show');
         }
 
-        // Dynamically set Expo QR code and links based on current hostname
-        const hostname = window.location.hostname || 'localhost';
-        const isGithubPages = hostname.includes('github.io');
-        
+        // Dynamically set Expo QR code and links based on current hostname / user input
+        const localIpInput = document.getElementById('local-ip');
         const qrImg = document.getElementById('expo-qr');
         const urlCode = document.getElementById('expo-url');
         const launchLink = document.getElementById('expo-link');
         
-        if (isGithubPages) {
-            // On GitHub Pages, direct them to run locally for development URL
-            qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://github.com/Rudra-Narayan-Swain/SubTrack';
-            urlCode.textContent = 'Run locally to generate QR';
-            launchLink.href = 'https://github.com/Rudra-Narayan-Swain/SubTrack#mobile-app';
-            launchLink.innerHTML = '<i data-lucide="info"></i> Run locally for Expo Go';
-        } else {
-            // Running locally (localhost or LAN IP), generate direct exp link
-            const expoUrl = `exp://${hostname}:8081`;
+        function updateExpoQR(host) {
+            const cleanHost = host.trim() || 'localhost';
+            const expoUrl = `exp://${cleanHost}:8081`;
             qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(expoUrl)}`;
             urlCode.textContent = expoUrl;
             launchLink.href = expoUrl;
         }
+
+        const initialHostname = window.location.hostname || 'localhost';
+        const isGithubPages = initialHostname.includes('github.io');
+        
+        if (isGithubPages) {
+            // On GitHub Pages, default to 192.168.1.100 and let them customize it in real-time
+            localIpInput.value = '192.168.1.100';
+            updateExpoQR('192.168.1.100');
+        } else {
+            // Running locally (localhost or LAN IP), prefill with current hostname/IP
+            localIpInput.value = initialHostname;
+            updateExpoQR(initialHostname);
+        }
+
+        // Update QR code dynamically as the user types their IP
+        localIpInput.addEventListener('input', (e) => {
+            updateExpoQR(e.target.value);
+        });
     </script>
 </body>
 </html>
