@@ -551,8 +551,8 @@
                     
                     <!-- Dynamic IP Input field for Expo -->
                     <div style="margin-bottom: 12px; width: 100%;">
-                        <label for="local-ip" style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">Local IP (for Expo Go):</label>
-                        <input type="text" id="local-ip" placeholder="e.g. 192.168.1.100" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 6px 12px; font-size: 0.8rem; color: white; width: 80%; text-align: center; font-family: monospace;" />
+                        <label for="local-ip" style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">Local IP or paste Terminal URL:</label>
+                        <input type="text" id="local-ip" placeholder="e.g. 192.168.1.50 or exp://..." style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 6px 12px; font-size: 0.8rem; color: white; width: 85%; text-align: center; font-family: monospace;" />
                     </div>
 
                     <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px; width: 100%;">
@@ -634,8 +634,23 @@
         const launchLink = document.getElementById('expo-link');
         
         function updateExpoQR(host) {
-            const cleanHost = host.trim() || 'localhost';
-            const expoUrl = `exp://${cleanHost}:8081`;
+            let cleanHost = host.trim();
+            if (!cleanHost) {
+                qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=exp://localhost:8081';
+                urlCode.textContent = 'Paste your Expo Terminal Link above!';
+                launchLink.href = '#';
+                return;
+            }
+            
+            let expoUrl = '';
+            if (cleanHost.startsWith('exp://')) {
+                expoUrl = cleanHost;
+            } else if (cleanHost.includes('.ngrok') || cleanHost.includes('expo.dev') || cleanHost.includes(':')) {
+                expoUrl = `exp://${cleanHost.replace(/^exp:\/\//, '')}`;
+            } else {
+                expoUrl = `exp://${cleanHost}:8081`;
+            }
+            
             qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(expoUrl)}`;
             urlCode.textContent = expoUrl;
             launchLink.href = expoUrl;
@@ -645,11 +660,13 @@
         const isGithubPages = initialHostname.includes('github.io');
         
         if (isGithubPages) {
-            // On GitHub Pages, default to 192.168.1.100 and let them customize it in real-time
-            localIpInput.value = '192.168.1.100';
-            updateExpoQR('192.168.1.100');
+            // On GitHub Pages, let them customize it, default to a general placeholder
+            localIpInput.value = '';
+            qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=exp://localhost:8081';
+            urlCode.textContent = 'Paste your Expo Terminal Link above!';
+            launchLink.href = '#';
         } else {
-            // Running locally (localhost or LAN IP), prefill with current hostname/IP
+            // Running locally, prefill with current dev hostname/IP
             localIpInput.value = initialHostname;
             updateExpoQR(initialHostname);
         }
