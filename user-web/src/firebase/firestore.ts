@@ -56,3 +56,14 @@ export const subscribeToQuery = <T>(
         onData(snap.docs.map((d) => ({ id: d.id, ...(d.data() as object) } as T)));
     });
 };
+
+export const subscribeToDocument = <T>(
+    col: string,
+    id: string,
+    onData: (item: T | null) => void
+): Unsubscribe => {
+    return onSnapshot(doc(db, col, id), (snap) => {
+        onData(snap.exists() ? ({ id: snap.id, ...snap.data() } as T) : null);
+    });
+};
+

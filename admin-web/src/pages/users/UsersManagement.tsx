@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { subscribeToUsers, createUser, updateUser, deleteUser, AdminUser } from '../../services/userService';
-import { Search, UserPlus, AlertCircle, Link, Check, Trash2 } from 'lucide-react';
+import { Search, UserPlus, AlertCircle, Link, Check, Trash2, X } from 'lucide-react';
 
 export const UsersManagement = () => {
     const [search, setSearch] = useState('');
@@ -181,7 +181,7 @@ export const UsersManagement = () => {
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="border-b border-white/[0.06]">
-                                        {['#', 'User', 'Email', 'Role', 'Status', 'Joined', 'UID', 'Actions'].map((h) => (
+                                        {['#', 'User', 'Email', 'Role', 'Joined', 'Status', 'UID', 'Actions'].map((h) => (
                                             <th key={h} className="text-left py-3 px-4 text-white/40 font-medium text-xs uppercase tracking-wider">
                                                 {h}
                                             </th>
@@ -227,7 +227,21 @@ export const UsersManagement = () => {
                                             </td>
                                             <td className="py-3.5 px-4">
                                                 <div className="flex items-center gap-2">
-                                                    {user.status !== 'approved' && (
+                                                    {user.status === 'approved' ? (
+                                                        <button
+                                                            onClick={async () => {
+                                                                try {
+                                                                    await updateUser(user.id, { status: 'pending' });
+                                                                } catch (err: any) {
+                                                                    alert(err?.message || 'Failed to suspend user');
+                                                                }
+                                                            }}
+                                                            title="Suspend / Pending User"
+                                                            className="p-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 transition-colors"
+                                                        >
+                                                            <X size={14} />
+                                                        </button>
+                                                    ) : (
                                                         <button
                                                             onClick={async () => {
                                                                 try {

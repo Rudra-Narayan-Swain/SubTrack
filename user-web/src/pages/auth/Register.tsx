@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Lock, User, Loader2, AlertCircle, Wifi } from 'lucide-react'; // Wifi used in network error alert
 import { signUp, updateUserProfile } from '../../firebase/auth';
+import { setDocument } from '../../firebase/firestore';
 
 const friendlyError = (code: string): { msg: string; isNetwork: boolean } => {
     switch (code) {
@@ -36,6 +37,19 @@ export const Register = () => {
         try {
             const cred = await signUp(email, password);
             await updateUserProfile(cred.user, { displayName: name });
+            await setDocument('users', cred.user.uid, {
+                uid: cred.user.uid,
+                name: name,
+                email: email,
+                role: 'user',
+                status: 'pending',
+                notificationPrefs: {
+                    reminders: true,
+                    paymentConfirmations: true,
+                    broadcasts: true
+                },
+                createdAt: new Date().toISOString(),
+            });
         } catch (err: any) {
             setError(friendlyError(err.code || ''));
             setLoading(false);

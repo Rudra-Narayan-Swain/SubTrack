@@ -13,6 +13,8 @@ export interface User {
     photoURL?: string;
     fcmToken?: string;
     isAdmin?: boolean;
+    role?: 'user' | 'admin';
+    status?: 'pending' | 'approved' | 'rejected';
     notificationPrefs: {
         reminders: boolean;
         paymentConfirmations: boolean;

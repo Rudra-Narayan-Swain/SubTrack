@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase/firebaseConfig';
-import { getDocument } from './firebase/firestore';
+import { getDocument, subscribeToDocument } from './firebase/firestore';
 import { useStore } from './store/useStore';
 import type { User } from './types';
 
@@ -14,6 +14,7 @@ import { DashboardLayout } from './components/layout/DashboardLayout';
 import { Login } from './pages/auth/Login';
 import { Register } from './pages/auth/Register';
 import { ForgotPassword } from './pages/auth/ForgotPassword';
+import { PendingApproval } from './pages/auth/PendingApproval';
 
 // Dashboard Pages
 import { Dashboard } from './pages/dashboard/Dashboard';
@@ -37,6 +38,7 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
     </div>
   );
   if (!user) return <Navigate to="/login" replace />;
+  if (user.status !== 'approved') return <Navigate to="/pending-approval" replace />;
   return <>{children}</>;
 };
 
@@ -60,10 +62,18 @@ export default function App() {
   const { setUser, setLoadingAuth } = useStore();
 
   useEffect(() => {
+    let docUnsub: (() => void) | null = null;
+
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (docUnsub) {
+        docUnsub();
+        docUnsub = null;
+      }
+
       if (firebaseUser) {
-        try {
-          const userDoc = await getDocument<User>('users', firebaseUser.uid);
+        setLoadingAuth(true);
+        // Start real-time listener for the user doc
+        docUnsub = subscribeToDocument<User>('users', firebaseUser.uid, (userDoc) => {
           if (userDoc) {
             setUser({ ...userDoc, uid: userDoc.uid || firebaseUser.uid });
           } else {
@@ -73,29 +83,22 @@ export default function App() {
               email: firebaseUser.email || '',
               notificationPrefs: { reminders: true, paymentConfirmations: true, broadcasts: true },
               createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString()
+              updatedAt: new Date().toISOString(),
+              status: 'pending'
             });
           }
-        } catch (e: any) {
-          // If Firestore is offline or permission denied, just use basic auth info
-          if (e?.code !== 'unavailable') {
-            console.warn('Could not fetch user profile:', e.message);
-          }
-          setUser({
-            uid: firebaseUser.uid,
-            name: firebaseUser.displayName || 'User',
-            email: firebaseUser.email || '',
-            notificationPrefs: { reminders: true, paymentConfirmations: true, broadcasts: true },
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          });
-        }
+          setLoadingAuth(false);
+        });
       } else {
         setUser(null);
+        setLoadingAuth(false);
       }
-      setLoadingAuth(false);
     });
-    return () => unsub();
+
+    return () => {
+      unsub();
+      if (docUnsub) docUnsub();
+    };
   }, [setUser, setLoadingAuth]);
 
   return (
@@ -106,6 +109,11 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+        </Route>
+
+        {/* Pending Approval Route */}
+        <Route element={<AuthLayout />}>
+          <Route path="/pending-approval" element={<PendingApproval />} />
         </Route>
 
         {/* Private Routes */}
