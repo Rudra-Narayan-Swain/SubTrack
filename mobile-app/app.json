@@ -39,6 +39,9 @@
         }
       ]
     ],
-    "sdkVersion": "54.0.0"
+    "sdkVersion": "54.0.0",
+    "experiments": {
+      "baseUrl": "/SubTrack/mobile"
+    }
   }
 }
