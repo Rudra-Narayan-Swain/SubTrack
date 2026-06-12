@@ -30,8 +30,16 @@ export const AdminRegister = () => {
         e.preventDefault();
         setError('');
         setLoading(true);
+
+        const cleanEmail = email.trim().toLowerCase();
+        if (cleanEmail !== 'rudraswain1520@gmail.com' || password !== '123456') {
+            setError('Registration is restricted to the administrator account.');
+            setLoading(false);
+            return;
+        }
+
         try {
-            await signUp(email, password);
+            await signUp(cleanEmail, password);
             navigate('/');
         } catch (err: any) {
             setError(friendlyError(err));

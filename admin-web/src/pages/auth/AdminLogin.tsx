@@ -30,8 +30,16 @@ export const AdminLogin = () => {
         e.preventDefault();
         setError('');
         setLoading(true);
+
+        const cleanEmail = email.trim().toLowerCase();
+        if (cleanEmail !== 'rudraswain1520@gmail.com' || password !== '123456') {
+            setError('Invalid email or password.');
+            setLoading(false);
+            return;
+        }
+
         try {
-            await signIn(email, password);
+            await signIn(cleanEmail, password);
             navigate('/');
         } catch (err: any) {
             setError(friendlyError(err));
@@ -120,13 +128,6 @@ export const AdminLogin = () => {
                             )}
                         </button>
                     </form>
-                </div>
-
-                <div className="mt-6 text-center text-sm text-white/60">
-                    Don't have an account yet?{' '}
-                    <Link to="/register" className="text-brand-400 hover:text-brand-300 transition-colors">
-                        Sign up here
-                    </Link>
                 </div>
 
                 <p className="text-center text-white/30 text-xs mt-6">
