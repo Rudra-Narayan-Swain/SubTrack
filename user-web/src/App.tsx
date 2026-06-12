@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase/firebaseConfig';
-import { getDocument, subscribeToDocument } from './firebase/firestore';
+import { subscribeToDocument } from './firebase/firestore';
 import { useStore } from './store/useStore';
 import type { User } from './types';
 
