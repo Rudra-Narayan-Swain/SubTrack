@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Lock, User, Loader2, AlertCircle, Wifi } from 'lucide-react'; // Wifi used in network error alert
-import { signUp, updateUserProfile } from '../../firebase/auth';
+import { signUp, updateUserProfile, signOut } from '../../firebase/auth';
 import { setDocument } from '../../firebase/firestore';
 
 const friendlyError = (code: string): { msg: string; isNetwork: boolean } => {
@@ -51,6 +51,12 @@ export const Register = () => {
                 createdAt: new Date().toISOString(),
             });
         } catch (err: any) {
+            console.error('Registration/Firestore creation failed:', err);
+            try {
+                await signOut();
+            } catch (signOutErr) {
+                console.error('Failed to sign out after registration error:', signOutErr);
+            }
             setError(friendlyError(err.code || ''));
             setLoading(false);
         }
