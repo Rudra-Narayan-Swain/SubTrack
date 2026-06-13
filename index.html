@@ -3,110 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SubTrack 🔔 | Smart Subscription Tracker & Manager</title>
-    <!-- Google Fonts -->
+    <title>SubTrack — Never Overpay for Subscriptions Again</title>
+    <meta name="description" content="SubTrack tracks all your subscriptions, alerts you before renewals, and helps you save money every month. Try the free web app today.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Lucide Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
         :root {
-            /* Cosmic Purple Theme (Default) */
-            --accent-primary: #8b5cf6;
-            --accent-primary-rgb: 139, 92, 246;
-            --accent-secondary: #6366f1;
-            --accent-secondary-rgb: 99, 102, 241;
-            --bg-color: #030303;
-            --text-primary: #f4f4f5;
-            --text-secondary: #a1a1aa;
-            --card-bg: rgba(10, 10, 12, 0.45);
-            --card-border: rgba(255, 255, 255, 0.05);
-            --card-hover-bg: rgba(18, 18, 20, 0.8);
-            --font-display: 'Outfit', sans-serif;
-            --font-body: 'Plus Jakarta Sans', sans-serif;
-            --glow-color: rgba(139, 92, 246, 0.12);
+            --bg: #050507;
+            --surface: #0e0e12;
+            --surface2: #16161d;
+            --border: rgba(255,255,255,0.06);
+            --border2: rgba(255,255,255,0.10);
+            --text: #f1f1f3;
+            --muted: #7b7b8d;
+            --purple: #7c3aed;
+            --purple-light: #a78bfa;
+            --blue: #2563eb;
+            --blue-light: #60a5fa;
+            --green: #059669;
+            --green-light: #34d399;
+            --pink: #db2777;
+            --orange: #ea580c;
+            --font: 'Inter', sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
+        html { scroll-behavior: smooth; }
 
         body {
-            font-family: var(--font-body);
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
             overflow-x: hidden;
-            position: relative;
+            min-height: 100vh;
         }
 
-        /* Particles Canvas */
-        #particle-canvas {
+        /* ─── NOISE TEXTURE ─── */
+        body::before {
+            content: '';
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
             pointer-events: none;
+            z-index: 0;
         }
 
-        /* Abstract Mesh Glows */
-        .glow-bg {
-            position: absolute;
-            width: 700px;
-            height: 700px;
+        /* ─── GLOW ORBS ─── */
+        .orb {
+            position: fixed;
             border-radius: 50%;
-            background: radial-gradient(circle, var(--glow-color) 0%, rgba(var(--accent-secondary-rgb), 0.03) 50%, transparent 100%);
-            top: -200px;
-            right: -100px;
-            z-index: 0;
+            filter: blur(120px);
             pointer-events: none;
-            filter: blur(90px);
-            transition: background 0.8s ease;
+            z-index: 0;
+            animation: float-orb 12s ease-in-out infinite;
+        }
+        .orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(124,58,237,0.18), transparent 70%); top: -200px; right: -100px; }
+        .orb-2 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(37,99,235,0.12), transparent 70%); bottom: 200px; left: -150px; animation-delay: -6s; }
+        .orb-3 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(219,39,119,0.08), transparent 70%); top: 50%; right: 10%; animation-delay: -3s; }
+
+        @keyframes float-orb {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-40px) scale(1.05); }
         }
 
-        .glow-bg-2 {
-            position: absolute;
-            width: 600px;
-            height: 600px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(var(--accent-secondary-rgb), 0.08) 0%, rgba(var(--accent-primary-rgb), 0.01) 60%, transparent 100%);
-            top: 800px;
-            left: -150px;
-            z-index: 0;
+        /* ─── GRID LINES ─── */
+        .grid-lines {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 80px 80px;
             pointer-events: none;
-            filter: blur(90px);
-            transition: background 0.8s ease;
+            z-index: 0;
         }
 
-        /* Navigation Bar */
+        /* ─── NAVIGATION ─── */
         nav {
-            position: sticky;
-            top: 0;
+            position: fixed;
+            top: 0; left: 0; right: 0;
             z-index: 100;
-            background: rgba(3, 3, 3, 0.7);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            transition: border-color 0.3s;
+            padding: 0 24px;
         }
 
-        .nav-container {
+        .nav-inner {
             max-width: 1200px;
-            margin: 0 auto;
-            padding: 16px 24px;
+            margin: 16px auto 0;
+            background: rgba(14,14,18,0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border2);
+            border-radius: 16px;
+            padding: 14px 24px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.04);
         }
 
         .nav-logo {
@@ -114,2045 +109,1518 @@
             align-items: center;
             gap: 10px;
             font-family: var(--font-display);
-            font-weight: 800;
-            font-size: 1.4rem;
-            color: #ffffff;
-            text-decoration: none;
-        }
-
-        .nav-logo i {
-            color: var(--accent-primary);
-            animation: pulse-ring 2.5s infinite;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-        }
-
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: color 0.2s;
-        }
-
-        .nav-links a:hover {
-            color: #ffffff;
-        }
-
-
-
-        /* Main Container */
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 60px 24px 40px 24px;
-            z-index: 1;
-            position: relative;
-        }
-
-        /* Hero Section */
-        .hero {
-            display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
-            gap: 48px;
-            align-items: center;
-            margin-bottom: 90px;
-            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .hero-info {
-            text-align: left;
-        }
-
-        .hero-tagline {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, rgba(var(--accent-primary-rgb), 0.1) 0%, rgba(var(--accent-secondary-rgb), 0.1) 100%);
-            padding: 8px 16px;
-            border-radius: 99px;
-            border: 1px solid rgba(var(--accent-primary-rgb), 0.15);
-            font-size: 0.8rem;
             font-weight: 700;
-            color: var(--accent-primary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 24px;
+            font-size: 1.25rem;
+            color: #fff;
+            text-decoration: none;
         }
 
-        .hero-tagline i {
-            animation: pulse-ring 2s infinite;
-        }
-
-        .hero h1 {
-            font-family: var(--font-display);
-            font-size: 3.8rem;
-            font-weight: 800;
-            line-height: 1.1;
-            letter-spacing: -0.03em;
-            margin-bottom: 20px;
-            background: linear-gradient(to right, #ffffff 30%, #e4e4e7 70%, #a1a1aa 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero-subtitle {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin-bottom: 36px;
-        }
-
-        .hero-buttons {
+        .logo-icon {
+            width: 32px; height: 32px;
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            border-radius: 8px;
             display: flex;
-            gap: 16px;
-            max-width: 440px;
-        }
-
-        /* Interactive Dashboard Preview Mockup */
-        .hero-preview {
-            background: rgba(12, 12, 15, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 28px;
-            padding: 24px;
-            backdrop-filter: blur(16px);
-            box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.6), 0 0 40px rgba(var(--accent-primary-rgb), 0.04);
-            position: relative;
-        }
-
-        .mock-header {
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-            padding-bottom: 12px;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 0 20px rgba(124,58,237,0.4);
         }
 
-        .mock-dots {
+        .nav-center {
             display: flex;
+            align-items: center;
             gap: 6px;
         }
 
-        .mock-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.15);
+        .nav-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 7px 14px;
+            border-radius: 8px;
+            transition: all 0.2s;
         }
 
-        .mock-dot:nth-child(1) { background: #f43f5e; }
-        .mock-dot:nth-child(2) { background: #eab308; }
-        .mock-dot:nth-child(3) { background: #10b981; }
+        .nav-link:hover { color: #fff; background: rgba(255,255,255,0.06); }
 
-        .mock-title {
+        .nav-cta {
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            padding: 9px 20px;
+            border-radius: 10px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(124,58,237,0.3);
+        }
+
+        .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 6px 25px rgba(124,58,237,0.5); }
+
+        /* ─── HERO ─── */
+        .hero {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 24px 80px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(124,58,237,0.12);
+            border: 1px solid rgba(124,58,237,0.3);
+            border-radius: 99px;
+            padding: 6px 16px;
             font-size: 0.8rem;
-            color: var(--text-secondary);
+            font-weight: 600;
+            color: var(--purple-light);
+            margin-bottom: 32px;
+            animation: fade-up 0.6s ease both;
+        }
+
+        .hero-badge-dot {
+            width: 6px; height: 6px;
+            background: var(--purple-light);
+            border-radius: 50%;
+            animation: pulse-glow 2s ease infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(167,139,250,0.5); }
+            50% { box-shadow: 0 0 0 6px rgba(167,139,250,0); }
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(2.8rem, 7vw, 5.5rem);
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            line-height: 1.08;
+            letter-spacing: -0.03em;
+            margin-bottom: 24px;
+            animation: fade-up 0.6s ease 0.1s both;
         }
 
-        .mock-stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            gap: 16px;
+        .gradient-text {
+            background: linear-gradient(135deg, #fff 0%, var(--purple-light) 50%, var(--blue-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-sub {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            color: var(--muted);
+            max-width: 600px;
+            line-height: 1.7;
+            margin-bottom: 40px;
+            animation: fade-up 0.6s ease 0.2s both;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: fade-up 0.6s ease 0.3s both;
+            margin-bottom: 70px;
+        }
+
+        .btn-hero-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            color: #fff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 14px 28px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 30px rgba(124,58,237,0.35);
+            transition: all 0.25s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-hero-primary::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+            opacity: 0;
+            transition: opacity 0.25s;
+        }
+
+        .btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(124,58,237,0.5); }
+        .btn-hero-primary:hover::before { opacity: 1; }
+
+        .btn-hero-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.04);
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 14px 28px;
+            border-radius: 14px;
+            border: 1px solid var(--border2);
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .btn-hero-secondary:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.18); transform: translateY(-2px); }
+
+        /* ─── STATS STRIP ─── */
+        .stats-strip {
+            animation: fade-up 0.6s ease 0.4s both;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .stat-item { text-align: center; }
+        .stat-num { font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; color: #fff; line-height: 1; }
+        .stat-lbl { font-size: 0.75rem; color: var(--muted); margin-top: 4px; font-weight: 500; }
+        .stat-divider { width: 1px; height: 30px; background: var(--border2); }
+
+        /* ─── FLOATING DASHBOARD PREVIEW ─── */
+        .hero-preview-wrap {
+            position: relative;
+            z-index: 1;
+            padding: 60px 24px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .dashboard-preview {
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: 24px;
+            padding: 24px;
+            max-width: 720px;
+            width: 100%;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04), 0 0 80px rgba(124,58,237,0.08);
+            animation: float-card 6s ease-in-out infinite;
+        }
+
+        @keyframes float-card {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .dash-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
         }
 
-        .mock-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            border-radius: 16px;
+        .dash-dots { display: flex; gap: 6px; }
+        .dash-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dash-dot:nth-child(1) { background: #ff5f57; }
+        .dash-dot:nth-child(2) { background: #febc2e; }
+        .dash-dot:nth-child(3) { background: #28c840; }
+
+        .dash-title-bar { font-size: 0.75rem; color: var(--muted); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+
+        .dash-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+
+        .dash-metric {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 14px;
             padding: 16px;
         }
 
-        .mock-stat-label {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
-
-        .mock-stat-val {
-            font-size: 1.6rem;
-            font-family: var(--font-display);
-            font-weight: 700;
-            color: #ffffff;
-            background: linear-gradient(135deg, #ffffff, var(--text-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .mock-stat-trend {
-            font-size: 0.7rem;
-            color: #10b981;
-            margin-top: 4px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .mock-sub-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            padding: 10px 14px;
-            margin-bottom: 8px;
+        .dash-metric-icon {
+            width: 28px; height: 28px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 10px;
             font-size: 0.8rem;
         }
 
-        .mock-sub-brand {
+        .dash-metric-val { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; color: #fff; }
+        .dash-metric-lbl { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+        .dash-metric-change { font-size: 0.65rem; font-weight: 600; margin-top: 6px; display: inline-flex; align-items: center; gap: 2px; }
+        .up { color: var(--green-light); }
+        .down { color: #f87171; }
+
+        .dash-subs { display: flex; flex-direction: column; gap: 8px; }
+
+        .dash-sub-row {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-weight: 600;
+            justify-content: space-between;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 14px;
         }
 
-        .brand-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
+        .dash-sub-left { display: flex; align-items: center; gap: 10px; }
 
-        .brand-dot.netflix { background: #e50914; }
-        .brand-dot.spotify { background: #1ed760; }
-        .brand-dot.chatgpt { background: #10a37f; }
-
-        .mock-sub-price {
+        .dash-sub-icon {
+            width: 30px; height: 30px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem;
             font-weight: 700;
-            color: #ffffff;
+            color: #fff;
         }
 
-        /* Accent Color Selector widget */
-        .theme-widget {
-            display: flex;
+        .dash-sub-name { font-size: 0.8rem; font-weight: 600; color: #fff; }
+        .dash-sub-date { font-size: 0.65rem; color: var(--muted); }
+        .dash-sub-price { font-size: 0.85rem; font-weight: 700; color: #fff; }
+        .dash-sub-badge { font-size: 0.6rem; font-weight: 700; padding: 2px 7px; border-radius: 99px; }
+        .dash-sub-badge.soon { background: rgba(234,88,12,0.15); color: #fb923c; border: 1px solid rgba(234,88,12,0.25); }
+        .dash-sub-badge.ok { background: rgba(5,150,105,0.12); color: var(--green-light); border: 1px solid rgba(5,150,105,0.2); }
+
+        /* ─── SECTION SHARED ─── */
+        .section { position: relative; z-index: 1; padding: 100px 24px; }
+        .section-inner { max-width: 1200px; margin: 0 auto; }
+
+        .section-eyebrow {
+            display: inline-flex;
             align-items: center;
-            gap: 8px;
-            background: rgba(10, 10, 12, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            padding: 8px 14px;
-            border-radius: 99px;
-            backdrop-filter: blur(10px);
-            width: fit-content;
-            margin: 0 auto 50px auto;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
-        }
-
-        .theme-label {
+            gap: 6px;
             font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
             font-weight: 700;
-            color: var(--text-secondary);
-            margin-right: 4px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--purple-light);
+            margin-bottom: 16px;
         }
 
-        .theme-dot {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .theme-dot:hover {
-            transform: scale(1.2);
-        }
-
-        .theme-dot.active {
-            border-color: #ffffff;
-            transform: scale(1.1);
-        }
-
-        .theme-dot.purple { background-color: #8b5cf6; }
-        .theme-dot.blue { background-color: #3b82f6; }
-        .theme-dot.emerald { background-color: #10b981; }
-        .theme-dot.pink { background-color: #ec4899; }
-        .theme-dot.cyber { background-color: #f97316; }
-
-        /* General Section Header */
-        .section-header {
-            text-align: center;
-            margin-bottom: 40px;
+        .section-eyebrow::before {
+            content: '';
+            width: 20px; height: 2px;
+            background: var(--purple-light);
+            border-radius: 2px;
         }
 
         .section-title {
             font-family: var(--font-display);
-            font-size: 2.2rem;
-            font-weight: 800;
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 700;
             letter-spacing: -0.02em;
-            margin-bottom: 12px;
-            background: linear-gradient(to right, #ffffff, #e4e4e7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+            color: #fff;
+            margin-bottom: 16px;
         }
 
-        .section-subtitle {
+        .section-sub {
             font-size: 1rem;
-            color: var(--text-secondary);
-            max-width: 550px;
-            margin: 0 auto;
-            line-height: 1.5;
+            color: var(--muted);
+            max-width: 520px;
+            line-height: 1.7;
         }
 
-        /* Trending Now Section */
-        .trending-section {
-            margin-bottom: 90px;
-            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
-        }
-
-        .trending-grid {
+        /* ─── FEATURES BENTO ─── */
+        .bento-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: auto;
+            gap: 16px;
+            margin-top: 56px;
         }
 
-        .trending-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
+        .bento-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
             border-radius: 20px;
             padding: 28px;
-            display: flex;
-            flex-direction: column;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
             overflow: hidden;
-            backdrop-filter: blur(12px);
+        }
+
+        .bento-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(400px circle at var(--x, 50%) var(--y, 50%), rgba(124,58,237,0.06), transparent 60%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .bento-card:hover { border-color: rgba(124,58,237,0.3); transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,0.3); }
+        .bento-card:hover::after { opacity: 1; }
+
+        .bento-card.wide { grid-column: span 2; }
+        .bento-card.tall { grid-row: span 2; }
+
+        .bento-icon {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 18px;
+        }
+
+        .bento-card h3 { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+        .bento-card p { font-size: 0.875rem; color: var(--muted); line-height: 1.65; }
+
+        .bento-number {
+            font-family: var(--font-display);
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        /* ─── TRENDING SECTION ─── */
+        .trending-scroll {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-top: 48px;
+        }
+
+        .trending-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 22px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .trending-card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(180deg, rgba(var(--brand-rgb), 0.06) 0%, transparent 100%);
-            pointer-events: none;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: var(--brand-gradient, linear-gradient(90deg, var(--purple), var(--blue)));
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
-        .trending-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(var(--brand-rgb), 0.35);
-            box-shadow: 0 15px 30px -10px rgba(var(--brand-rgb), 0.2);
-        }
+        .trending-card:hover { border-color: var(--border2); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.4); }
+        .trending-card:hover::before { opacity: 1; }
 
-        .trending-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            position: relative;
-            z-index: 2;
-        }
+        .t-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 
-        .brand-icon-wrapper {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(var(--brand-rgb), 0.12);
-            border: 1px solid rgba(var(--brand-rgb), 0.2);
-            color: var(--brand-color);
-            font-size: 1.25rem;
-            transition: all 0.3s;
-        }
-
-        .trending-card:hover .brand-icon-wrapper {
-            background: var(--brand-color);
-            color: #ffffff;
-            box-shadow: 0 0 15px rgba(var(--brand-rgb), 0.4);
-        }
-
-        .trending-category {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            color: var(--text-secondary);
-            background: rgba(255, 255, 255, 0.03);
-            padding: 4px 10px;
-            border-radius: 99px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .trending-name {
-            font-family: var(--font-display);
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 6px;
-        }
-
-        .trending-price-info {
-            display: flex;
-            align-items: baseline;
-            gap: 4px;
-            margin-bottom: 20px;
-        }
-
-        .trending-price {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #ffffff;
-            font-family: var(--font-display);
-        }
-
-        .trending-period {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        .btn-track {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 10px 16px;
+        .t-icon {
+            width: 40px; height: 40px;
             border-radius: 10px;
-            font-family: var(--font-body);
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            background: rgba(255, 255, 255, 0.02);
-            color: white;
-            transition: all 0.2s;
-            width: 100%;
-            position: relative;
-            z-index: 2;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.85rem; color: #fff;
         }
 
-        .btn-track:hover {
-            background: var(--brand-color);
-            border-color: var(--brand-color);
-            color: #ffffff;
-            box-shadow: 0 5px 15px rgba(var(--brand-rgb), 0.25);
-            transform: scale(1.02);
-        }
-
-        .btn-track.added {
-            background: rgba(16, 185, 129, 0.08);
-            border-color: rgba(16, 185, 129, 0.3);
-            color: #10b981;
-        }
-
-        .btn-track.added:hover {
-            background: rgba(244, 63, 94, 0.08);
-            border-color: rgba(244, 63, 94, 0.3);
-            color: #f43f5e;
-            box-shadow: none;
-        }
-
-        /* Calculator Section */
-        .calc-section {
-            margin-bottom: 90px;
-            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
-        }
-
-        .calc-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 32px;
-            background: rgba(8, 8, 10, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 28px;
-            padding: 36px;
-            backdrop-filter: blur(16px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-        }
-
-        .calc-inputs {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .calc-group-title {
-            font-size: 0.8rem;
+        .t-cat {
+            font-size: 0.65rem;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            font-weight: 700;
-            color: var(--text-secondary);
-            border-left: 2px solid var(--accent-primary);
-            padding-left: 8px;
-            margin-bottom: 12px;
+            color: var(--muted);
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            padding: 3px 8px;
+            border-radius: 99px;
         }
 
-        .calc-checkboxes {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
+        .t-name { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+        .t-price-row { display: flex; align-items: baseline; gap: 4px; margin-bottom: 16px; }
+        .t-price { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: #fff; }
+        .t-period { font-size: 0.75rem; color: var(--muted); }
 
-        .calc-checkbox-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 12px;
-            padding: 12px;
+        .t-btn {
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+            padding: 9px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,0.03);
+            color: var(--muted);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .t-btn:hover { background: rgba(255,255,255,0.07); color: #fff; border-color: var(--border2); }
+
+        .t-btn.added { background: rgba(5,150,105,0.08); color: var(--green-light); border-color: rgba(5,150,105,0.2); }
+
+        /* ─── CALCULATOR ─── */
+        .calc-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 48px;
+        }
+
+        .calc-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+        }
+
+        .calc-panel-title { font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+
+        .preset-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+
+        .preset-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: 99px;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--muted);
             cursor: pointer;
             transition: all 0.2s;
             user-select: none;
         }
 
-        .calc-checkbox-card:hover {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(255, 255, 255, 0.08);
-        }
+        .preset-chip:hover { color: #fff; border-color: var(--border2); }
+        .preset-chip.active { background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.4); color: var(--purple-light); }
 
-        .calc-checkbox-card.selected {
-            background: rgba(var(--accent-primary-rgb), 0.08);
-            border-color: var(--accent-primary);
-        }
+        .preset-chip-price { opacity: 0.6; font-size: 0.7rem; }
 
-        .calc-checkbox-card input {
-            accent-color: var(--accent-primary);
-            width: 16px;
-            height: 16px;
-        }
+        .custom-row { display: flex; gap: 10px; }
 
-        .calc-checkbox-label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: white;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .calc-checkbox-label span {
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        /* Custom item form */
-        .custom-item-form {
-            display: flex;
-            gap: 12px;
-            background: rgba(255, 255, 255, 0.01);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            padding: 16px;
-            border-radius: 16px;
-        }
-
-        .custom-input {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 8px;
+        .calc-input {
+            flex: 1;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
             padding: 10px 14px;
-            color: white;
+            color: #fff;
             font-size: 0.85rem;
             outline: none;
-            width: 100%;
-            transition: border-color 0.3s;
+            font-family: var(--font);
+            transition: border-color 0.2s;
         }
 
-        .custom-input:focus {
-            border-color: var(--accent-primary);
-        }
+        .calc-input:focus { border-color: var(--purple); }
+        .calc-input::placeholder { color: var(--muted); }
 
-        .btn-add-custom {
-            background: var(--accent-primary);
+        .calc-input-price { max-width: 100px; }
+
+        .calc-add-btn {
+            background: var(--purple);
             border: none;
-            color: white;
-            border-radius: 8px;
-            padding: 0 16px;
-            font-weight: 600;
+            border-radius: 10px;
+            color: #fff;
+            padding: 10px 16px;
+            font-weight: 700;
+            font-size: 0.85rem;
             cursor: pointer;
+            display: flex; align-items: center; gap: 6px;
             transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            white-space: nowrap;
         }
 
-        .btn-add-custom:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(var(--accent-primary-rgb), 0.3);
+        .calc-add-btn:hover { background: var(--purple-light); }
+
+        /* Results panel */
+        .results-hero {
+            background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(37,99,235,0.12));
+            border: 1px solid rgba(124,58,237,0.2);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 16px;
         }
 
-        /* Calculator Results Column */
-        .calc-results {
-            background: rgba(255, 255, 255, 0.01);
-            border: 1px solid rgba(255, 255, 255, 0.03);
+        .results-big { font-family: var(--font-display); font-size: 3rem; font-weight: 700; color: #fff; line-height: 1; }
+        .results-big-lbl { font-size: 0.8rem; color: var(--muted); margin-top: 6px; font-weight: 500; }
+
+        .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+
+        .result-box {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .result-box-val { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: #fff; }
+        .result-box-lbl { font-size: 0.7rem; color: var(--muted); margin-top: 3px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.04em; }
+
+        .savings-tip {
+            background: rgba(5,150,105,0.08);
+            border: 1px solid rgba(5,150,105,0.15);
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 0.8rem;
+            color: var(--green-light);
+            line-height: 1.5;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        /* ─── APP GATEWAYS ─── */
+        .gateways-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 48px;
+        }
+
+        .gateway-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
             border-radius: 20px;
             padding: 28px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .results-header {
-            margin-bottom: 24px;
-        }
-
-        .results-title {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            color: var(--text-secondary);
-            margin-bottom: 12px;
-        }
-
-        .results-total-box {
-            background: linear-gradient(135deg, rgba(var(--accent-primary-rgb), 0.08) 0%, rgba(var(--accent-secondary-rgb), 0.08) 100%);
-            border: 1px solid rgba(var(--accent-primary-rgb), 0.15);
-            border-radius: 16px;
-            padding: 24px;
-            text-align: center;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .results-price {
-            font-size: 2.8rem;
-            font-family: var(--font-display);
-            font-weight: 800;
-            background: linear-gradient(to right, #ffffff, rgba(255, 255, 255, 0.8));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 4px;
-        }
-
-        .results-price-label {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            font-weight: 600;
-        }
-
-        .results-stats-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin: 20px 0;
-        }
-
-        .results-stat-box {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 12px;
-            padding: 14px;
-            text-align: center;
-        }
-
-        .results-stat-num {
-            font-size: 1.15rem;
-            font-family: var(--font-display);
-            font-weight: 700;
-            color: white;
-            margin-bottom: 2px;
-        }
-
-        .results-stat-lbl {
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            font-weight: 600;
-            letter-spacing: 0.02em;
-        }
-
-        .results-footer {
-            border-top: 1px solid rgba(255, 255, 255, 0.04);
-            padding-top: 20px;
-        }
-
-        .results-tip {
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
-
-        .results-tip i {
-            color: #10b981;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        .saving-bold {
-            color: white;
-            font-weight: 600;
-        }
-
-
-
-        /* Dev Gateway Cards Grid */
-        .portal-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 28px;
-            margin-bottom: 50px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 24px;
-            padding: 36px;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            backdrop-filter: blur(16px);
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
-        .card::before {
+        .gateway-card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(800px circle at var(--x, 0px) var(--y, 0px), rgba(var(--accent-primary-rgb), 0.08), transparent 45%);
-            z-index: 1;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(600px circle at var(--x, 50%) var(--y, 50%), rgba(124,58,237,0.06), transparent 50%);
             pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
-        .card:hover {
-            transform: translateY(-6px);
-            border-color: rgba(var(--accent-primary-rgb), 0.35);
-            background: var(--card-hover-bg);
-            box-shadow: 0 20px 40px -15px rgba(var(--accent-primary-rgb), 0.15);
+        .gateway-card:hover { transform: translateY(-5px); border-color: rgba(124,58,237,0.25); box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
+        .gateway-card:hover::before { opacity: 1; }
+
+        .gw-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+        .gw-title-group { display: flex; align-items: center; gap: 12px; }
+
+        .gw-icon {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(124,58,237,0.1);
+            border: 1px solid rgba(124,58,237,0.18);
+            color: var(--purple-light);
+            transition: all 0.3s;
         }
 
-        .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 22px;
-        }
+        .gateway-card:hover .gw-icon { background: var(--purple); color: #fff; box-shadow: 0 0 20px rgba(124,58,237,0.4); }
 
-        .card-title-group {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
+        .gw-title { font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: #fff; }
 
-        .card-icon-wrapper {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(var(--accent-primary-rgb), 0.08);
-            border: 1px solid rgba(var(--accent-primary-rgb), 0.15);
-            color: var(--accent-primary);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .card:hover .card-icon-wrapper {
-            background: var(--accent-primary);
-            color: #ffffff;
-            box-shadow: 0 0 20px rgba(var(--accent-primary-rgb), 0.4);
-            transform: scale(1.05);
-        }
-
-        .card-title {
-            font-family: var(--font-display);
-            font-size: 1.45rem;
-            font-weight: 700;
-            color: #ffffff;
-        }
-
-        /* Dynamic Status Badges */
-        .status-badge {
+        .status-pill {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 5px 12px;
+            gap: 5px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 4px 10px;
             border-radius: 99px;
             text-transform: uppercase;
-            letter-spacing: 0.02em;
-            transition: all 0.3s;
+            letter-spacing: 0.03em;
         }
 
-        .status-badge .pulse-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+        .status-pill.checking { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid var(--border); }
+        .status-pill.checking .status-dot { background: var(--muted); }
+        .status-pill.online { background: rgba(5,150,105,0.1); color: var(--green-light); border: 1px solid rgba(5,150,105,0.18); }
+        .status-pill.online .status-dot { background: var(--green-light); box-shadow: 0 0 6px var(--green-light); animation: pulse-dot 2s infinite; }
+        .status-pill.offline { background: rgba(239,68,68,0.08); color: #f87171; border: 1px solid rgba(239,68,68,0.15); }
+        .status-pill.offline .status-dot { background: #f87171; }
+
+        @keyframes pulse-dot {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
         }
 
-        .status-badge.checking {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-secondary);
-        }
-        .status-badge.checking .pulse-dot {
-            background: #a1a1aa;
-            animation: pulse-ring 1.5s infinite;
-        }
+        .gw-desc { font-size: 0.875rem; color: var(--muted); line-height: 1.65; margin-bottom: 22px; flex: 1; }
 
-        .status-badge.online {
-            background: rgba(16, 185, 129, 0.08);
-            color: #10b981;
-            border: 1px solid rgba(16, 185, 129, 0.15);
-        }
-        .status-badge.online .pulse-dot {
-            background: #10b981;
-            box-shadow: 0 0 8px #10b981;
-            animation: status-pulse 2s infinite;
-        }
+        .gw-actions { display: flex; flex-direction: column; gap: 10px; position: relative; z-index: 2; }
 
-        .status-badge.offline {
-            background: rgba(244, 63, 94, 0.05);
-            color: #f43f5e;
-            border: 1px solid rgba(244, 63, 94, 0.1);
-        }
-        .status-badge.offline .pulse-dot {
-            background: #f43f5e;
-        }
-
-        .card-description {
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin-bottom: 28px;
-            flex-grow: 1;
-        }
-
-        /* Actions / Buttons */
-        .card-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 13px 22px;
-            border-radius: 14px;
-            font-family: var(--font-body);
-            font-weight: 600;
-            font-size: 0.95rem;
+        .gw-btn-primary {
+            display: flex; align-items: center; justify-content: center; gap: 7px;
+            padding: 12px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            color: #fff;
+            font-size: 0.875rem;
+            font-weight: 700;
             text-decoration: none;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            cursor: pointer;
-            width: 100%;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
-            color: #ffffff;
             border: none;
-            box-shadow: 0 4px 15px rgba(var(--accent-primary-rgb), 0.15);
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(124,58,237,0.2);
         }
 
-        .btn-primary:hover {
-            transform: scale(1.02);
-            box-shadow: 0 6px 22px rgba(var(--accent-primary-rgb), 0.3);
+        .gw-btn-primary:hover { transform: scale(1.02); box-shadow: 0 6px 22px rgba(124,58,237,0.4); }
+
+        .gw-btn-secondary {
+            display: flex; align-items: center; justify-content: center; gap: 7px;
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.03);
+            color: var(--muted);
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-decoration: none;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.03);
-            color: var(--text-primary);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-        }
+        .gw-btn-secondary:hover { background: rgba(255,255,255,0.07); color: #fff; border-color: var(--border2); }
 
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.07);
-            border-color: rgba(255, 255, 255, 0.12);
-            transform: scale(1.02);
-        }
-
-        .mobile-config-panel {
-            background: rgba(0, 0, 0, 0.25);
-            border-radius: 16px;
+        /* Expo QR Panel */
+        .expo-panel {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            border-radius: 14px;
             padding: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            margin-bottom: 16px;
-            width: 100%;
+            margin-bottom: 12px;
+            text-align: center;
         }
 
-        .qr-container {
-            background: white;
-            padding: 14px;
-            border-radius: 16px;
+        .qr-wrap {
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px;
             display: inline-block;
-            margin: 0 auto 16px auto;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            margin-bottom: 12px;
             transition: transform 0.3s;
         }
+        .qr-wrap:hover { transform: scale(1.03); }
 
-        .qr-container:hover {
-            transform: scale(1.03);
-        }
+        .expo-ip-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 700; display: block; margin-bottom: 6px; }
 
-        .local-ip-wrapper {
-            margin-bottom: 16px;
-            width: 100%;
-        }
-
-        .local-ip-wrapper label {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.02em;
-        }
-
-        .ip-input-field {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
-            padding: 8px 14px;
-            font-size: 0.85rem;
-            color: white;
-            width: 100%;
-            text-align: center;
-            font-family: monospace;
-            outline: none;
-            transition: all 0.3s;
-        }
-
-        .ip-input-field:focus {
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 10px rgba(var(--accent-primary-rgb), 0.2);
-            background: rgba(255, 255, 255, 0.06);
-        }
-
-        .expo-url-box {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-bottom: 16px;
-            width: 100%;
-            text-align: center;
-        }
-
-        .expo-url-box p {
-            font-weight: 600;
-            color: white;
-            margin-bottom: 4px;
-        }
-
-        .expo-url-code {
-            background: rgba(0, 0, 0, 0.4);
-            padding: 6px 12px;
+        .expo-ip-input {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
             border-radius: 8px;
-            display: inline-flex;
+            padding: 7px 12px;
+            color: #fff;
+            font-size: 0.78rem;
+            font-family: monospace;
+            width: 100%;
+            outline: none;
+            text-align: center;
+            transition: border-color 0.2s;
+        }
+
+        .expo-ip-input:focus { border-color: var(--purple); }
+
+        .expo-url-display {
+            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            word-break: break-all;
+            gap: 6px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 7px 12px;
+            font-size: 0.75rem;
             font-family: monospace;
-            font-size: 0.8rem;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            width: 100%;
+            color: var(--purple-light);
+            margin-top: 8px;
         }
 
-        .copy-icon-btn {
-            background: transparent;
+        .expo-copy-btn {
+            background: none;
             border: none;
-            color: var(--text-secondary);
+            color: var(--muted);
             cursor: pointer;
-            display: inline-flex;
-            align-items: center;
+            display: flex; align-items: center;
             transition: color 0.2s;
         }
 
-        .copy-icon-btn:hover {
-            color: white;
-        }
+        .expo-copy-btn:hover { color: #fff; }
 
-
-
-        /* Architecture Flow */
-        .architecture-section {
-            background: rgba(10, 10, 12, 0.35);
-            border: 1px solid rgba(255, 255, 255, 0.02);
-            border-radius: 24px;
-            padding: 32px;
-            text-align: center;
-            backdrop-filter: blur(8px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .arch-title {
-            font-family: var(--font-display);
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 24px;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .arch-flow {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-        }
-
-        .arch-node {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 14px;
-            padding: 14px 24px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #e4e4e7;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .arch-arrow {
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            animation: pulse-arrow 2s infinite ease-in-out;
-        }
-
-        /* Toast Popup */
-        .toast {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: rgba(10, 10, 12, 0.9);
-            border: 1px solid var(--accent-primary);
-            color: #ffffff;
-            padding: 14px 24px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(var(--accent-primary-rgb), 0.15);
-            font-family: var(--font-body);
-            font-size: 0.9rem;
-            font-weight: 500;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        .toast-icon {
-            color: #10b981;
-        }
-
-        /* Footer */
+        /* ─── FOOTER ─── */
         footer {
-            text-align: center;
-            padding: 50px 0 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            margin-top: auto;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
+            position: relative;
+            z-index: 1;
+            padding: 60px 24px 32px;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 14px;
-            z-index: 1;
+            align-items: center;
+            gap: 24px;
+            text-align: center;
         }
 
-        .footer-links {
+        .footer-logo {
             display: flex;
-            justify-content: center;
-            gap: 24px;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
         }
+
+        .footer-links { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
 
         .footer-links a {
-            color: var(--text-secondary);
+            color: var(--muted);
             text-decoration: none;
+            font-size: 0.85rem;
+            display: flex; align-items: center; gap: 5px;
             transition: color 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+        }
+        .footer-links a:hover { color: #fff; }
+
+        .footer-copy { font-size: 0.78rem; color: var(--muted); }
+
+        /* ─── TOAST ─── */
+        .toast {
+            position: fixed;
+            bottom: 28px; right: 28px;
+            background: rgba(14,14,18,0.95);
+            border: 1px solid rgba(124,58,237,0.4);
+            color: #fff;
+            padding: 14px 20px;
+            border-radius: 14px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            z-index: 1000;
+            display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(124,58,237,0.1);
+            transform: translateY(120px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .footer-links a:hover {
-            color: var(--accent-primary);
-        }
+        .toast.show { transform: translateY(0); opacity: 1; }
 
-        /* Keyframes */
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-25px); }
+        /* ─── ANIMATIONS ─── */
+        @keyframes fade-up {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(25px); }
-            to { opacity: 1; transform: translateY(0); }
+        .animate-up { animation: fade-up 0.6s ease both; }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 900px) {
+            .bento-grid { grid-template-columns: 1fr 1fr; }
+            .bento-card.wide { grid-column: span 2; }
+            .calc-layout { grid-template-columns: 1fr; }
+            .gateways-grid { grid-template-columns: 1fr; }
+            .dash-grid { grid-template-columns: 1fr 1fr; }
         }
 
-        @keyframes pulse-ring {
-            0% { transform: scale(0.96); opacity: 0.8; }
-            50% { transform: scale(1.04); opacity: 1; }
-            100% { transform: scale(0.96); opacity: 0.8; }
-        }
-
-        @keyframes status-pulse {
-            0% { transform: scale(0.9); opacity: 0.8; }
-            50% { transform: scale(1.15); opacity: 1; }
-            100% { transform: scale(0.9); opacity: 0.8; }
-        }
-
-        @keyframes pulse-arrow {
-            0% { transform: translateX(0); opacity: 0.5; }
-            50% { transform: translateX(4px); opacity: 1; }
-            100% { transform: translateX(0); opacity: 0.5; }
-        }
-
-        /* Responsive */
-        @media (max-width: 992px) {
-            .hero { grid-template-columns: 1fr; text-align: center; gap: 36px; }
-            .hero-info { text-align: center; display: flex; flex-direction: column; align-items: center; }
-            .hero-buttons { width: 100%; justify-content: center; }
-            .calc-grid { grid-template-columns: 1fr; }
-        }
-
-        @media (max-width: 768px) {
-            .nav-links { display: none; } /* Hide raw navigation items on small screens */
-            .hero h1 { font-size: 2.8rem; }
-            .portal-grid { grid-template-columns: 1fr; }
-            .arch-flow { flex-direction: column; }
-            .arch-arrow { transform: rotate(90deg); margin: 6px 0; animation: none; }
-            .calc-checkboxes { grid-template-columns: 1fr; }
-            .custom-item-form { flex-direction: column; }
+        @media (max-width: 640px) {
+            .bento-grid { grid-template-columns: 1fr; }
+            .bento-card.wide { grid-column: span 1; }
+            .nav-center { display: none; }
+            .stats-strip { gap: 20px; }
+            .stat-divider { display: none; }
+            .hero-actions { flex-direction: column; width: 100%; }
+            .btn-hero-primary, .btn-hero-secondary { width: 100%; justify-content: center; }
+            .dash-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <!-- Canvas for particle background -->
-    <canvas id="particle-canvas"></canvas>
 
-    <div class="glow-bg" id="glow-1"></div>
-    <div class="glow-bg-2" id="glow-2"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+<div class="grid-lines"></div>
 
-    <!-- Navigation Header -->
-    <nav>
-        <div class="nav-container">
-            <a href="#" class="nav-logo">
-                <i data-lucide="bell-ring"></i>
-                <span>SubTrack</span>
-            </a>
-            <div class="nav-links">
-                <a href="#features">Features</a>
-                <a href="#trending">Trending Now</a>
-                <a href="#calculator">Calculator</a>
-                <a href="#workspaces">Applications</a>
+<!-- ─── NAV ─── -->
+<nav>
+    <div class="nav-inner">
+        <a href="#" class="nav-logo">
+            <div class="logo-icon">
+                <i data-lucide="bell-ring" style="width:16px;height:16px;"></i>
+            </div>
+            SubTrack
+        </a>
+        <div class="nav-center">
+            <a href="#features" class="nav-link">Features</a>
+            <a href="#trending" class="nav-link">Trending</a>
+            <a href="#calculator" class="nav-link">Calculator</a>
+            <a href="#apps" class="nav-link">Apps</a>
+        </div>
+        <a href="./user/" class="nav-cta">
+            <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+            Get Started
+        </a>
+    </div>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+    <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        New — Intelligent Renewal Alerts
+    </div>
+
+    <h1 class="hero-title">
+        Stop wasting money<br>
+        on <span class="gradient-text">forgotten subscriptions</span>
+    </h1>
+
+    <p class="hero-sub">
+        SubTrack gives you complete visibility over every recurring expense.
+        Know what you pay, when you pay, and where you can save — all in one beautiful dashboard.
+    </p>
+
+    <div class="hero-actions">
+        <a href="./user/" class="btn-hero-primary">
+            <i data-lucide="rocket" style="width:16px;height:16px;"></i>
+            Launch Web Dashboard
+        </a>
+        <button onclick="document.getElementById('trending').scrollIntoView({behavior:'smooth'})" class="btn-hero-secondary">
+            <i data-lucide="trending-up" style="width:16px;height:16px;"></i>
+            Explore Trending Apps
+        </button>
+    </div>
+
+    <div class="stats-strip">
+        <div class="stat-item">
+            <div class="stat-num" id="counter-subs">0</div>
+            <div class="stat-lbl">Subscriptions Tracked</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <div class="stat-num" id="counter-saved">$0</div>
+            <div class="stat-lbl">Avg. Monthly Savings</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <div class="stat-num" id="counter-alerts">0</div>
+            <div class="stat-lbl">Renewal Alerts Sent</div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── DASHBOARD PREVIEW ─── -->
+<div class="hero-preview-wrap">
+    <div class="dashboard-preview">
+        <div class="dash-top">
+            <div class="dash-dots"><div class="dash-dot"></div><div class="dash-dot"></div><div class="dash-dot"></div></div>
+            <div class="dash-title-bar">SubTrack — My Dashboard</div>
+            <i data-lucide="settings" style="width:14px;height:14px;color:var(--muted);"></i>
+        </div>
+        <div class="dash-grid" id="mock-dash-grid">
+            <div class="dash-metric">
+                <div class="dash-metric-icon" style="background:rgba(124,58,237,0.12);color:var(--purple-light);">
+                    <i data-lucide="wallet" style="width:14px;height:14px;"></i>
+                </div>
+                <div class="dash-metric-val" id="mock-monthly">$42.47</div>
+                <div class="dash-metric-lbl">Monthly Total</div>
+                <div class="dash-metric-change down"><i data-lucide="trending-down" style="width:10px;height:10px;"></i> -12.4%</div>
+            </div>
+            <div class="dash-metric">
+                <div class="dash-metric-icon" style="background:rgba(37,99,235,0.12);color:var(--blue-light);">
+                    <i data-lucide="layers" style="width:14px;height:14px;"></i>
+                </div>
+                <div class="dash-metric-val" id="mock-count">3 Active</div>
+                <div class="dash-metric-lbl">Subscriptions</div>
+                <div class="dash-metric-change up"><i data-lucide="check-circle" style="width:10px;height:10px;"></i> Optimized</div>
+            </div>
+            <div class="dash-metric">
+                <div class="dash-metric-icon" style="background:rgba(5,150,105,0.12);color:var(--green-light);">
+                    <i data-lucide="piggy-bank" style="width:14px;height:14px;"></i>
+                </div>
+                <div class="dash-metric-val">$18.50</div>
+                <div class="dash-metric-lbl">Saved This Month</div>
+                <div class="dash-metric-change up"><i data-lucide="trending-up" style="width:10px;height:10px;"></i> +31%</div>
             </div>
         </div>
-    </nav>
-
-    <div class="container">
-        <!-- Hero Section -->
-        <section class="hero">
-            <div class="hero-info">
-                <div class="hero-tagline">
-                    <i data-lucide="activity"></i> New: Intelligent Cost Analytics
+        <div class="dash-subs" id="mock-sub-list">
+            <div class="dash-sub-row">
+                <div class="dash-sub-left">
+                    <div class="dash-sub-icon" style="background:#e50914;">N</div>
+                    <div><div class="dash-sub-name">Netflix</div><div class="dash-sub-date">Renews Jun 18</div></div>
                 </div>
-                <h1>Master Your Subscriptions. Save Your Money.</h1>
-                <p class="hero-subtitle">Say goodbye to surprise renewals. Track your recurring expenses, analyze category allocations, and get smart alert reminders in one premium dashboard.</p>
-                <div class="hero-buttons">
-                    <a href="./user/" class="btn btn-primary">
-                        <i data-lucide="external-link"></i> Launch Web Dashboard
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <span class="dash-sub-badge soon">5 days</span>
+                    <span class="dash-sub-price">$15.49</span>
+                </div>
+            </div>
+            <div class="dash-sub-row">
+                <div class="dash-sub-left">
+                    <div class="dash-sub-icon" style="background:#1ed760;">S</div>
+                    <div><div class="dash-sub-name">Spotify</div><div class="dash-sub-date">Renews Jun 28</div></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <span class="dash-sub-badge ok">15 days</span>
+                    <span class="dash-sub-price">$10.99</span>
+                </div>
+            </div>
+            <div class="dash-sub-row">
+                <div class="dash-sub-left">
+                    <div class="dash-sub-icon" style="background:#10a37f;">G</div>
+                    <div><div class="dash-sub-name">ChatGPT Plus</div><div class="dash-sub-date">Renews Jul 1</div></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <span class="dash-sub-badge ok">18 days</span>
+                    <span class="dash-sub-price">$20.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── FEATURES BENTO ─── -->
+<section class="section" id="features">
+    <div class="section-inner">
+        <div class="section-eyebrow">Why SubTrack</div>
+        <h2 class="section-title">Built to protect your wallet</h2>
+        <p class="section-sub">Subscription creep is real. The average person spends $313/month on subscriptions and forgets about half of them.</p>
+
+        <div class="bento-grid">
+            <div class="bento-card wide">
+                <div class="bento-icon" style="background:rgba(124,58,237,0.12);color:var(--purple-light);">
+                    <i data-lucide="bell-ring"></i>
+                </div>
+                <h3>Smart Renewal Alerts</h3>
+                <p>Get notified 3 days before every subscription renews. No more surprise charges or forgotten trials. Stay in control of every payment cycle.</p>
+            </div>
+            <div class="bento-card">
+                <div class="bento-number gradient-text">$313</div>
+                <div style="color:var(--muted);font-size:0.8rem;margin-bottom:8px;">avg. monthly spend</div>
+                <div class="bento-icon" style="background:rgba(219,39,119,0.1);color:#f472b6;width:32px;height:32px;border-radius:8px;">
+                    <i data-lucide="trending-down" style="width:14px;height:14px;"></i>
+                </div>
+                <h3 style="font-size:0.95rem;">Cut the waste</h3>
+                <p style="font-size:0.8rem;">Identify unused services instantly</p>
+            </div>
+            <div class="bento-card">
+                <div class="bento-icon" style="background:rgba(37,99,235,0.12);color:var(--blue-light);">
+                    <i data-lucide="pie-chart"></i>
+                </div>
+                <h3>Visual Analytics</h3>
+                <p>Category breakdowns, spending trends, and monthly comparisons at a glance.</p>
+            </div>
+            <div class="bento-card">
+                <div class="bento-icon" style="background:rgba(5,150,105,0.12);color:var(--green-light);">
+                    <i data-lucide="smartphone"></i>
+                </div>
+                <h3>Mobile First</h3>
+                <p>Native Expo app for iOS and Android. Get push alerts wherever you are.</p>
+            </div>
+            <div class="bento-card wide">
+                <div class="bento-icon" style="background:rgba(234,88,12,0.1);color:#fb923c;">
+                    <i data-lucide="shield-check"></i>
+                </div>
+                <h3>Multi-Card Tracking</h3>
+                <p>Assign subscriptions to different payment cards and track billing cycles per card. Perfect for separating personal and business expenses.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── TRENDING NOW ─── -->
+<section class="section" id="trending">
+    <div class="section-inner">
+        <div class="section-eyebrow">Trending Now</div>
+        <h2 class="section-title">Popular subscriptions to track</h2>
+        <p class="section-sub">Add presets to the calculator below instantly. Click any card to toggle tracking.</p>
+
+        <div class="trending-scroll">
+            <div class="trending-card" id="tc-netflix" onclick="toggleTemplate('netflix','Netflix',15.49)" style="--brand-gradient: linear-gradient(90deg,#e50914,#b80710)">
+                <div class="t-header">
+                    <div class="t-icon" style="background:#e50914;">N</div>
+                    <span class="t-cat">Entertainment</span>
+                </div>
+                <div class="t-name">Netflix</div>
+                <div class="t-price-row"><span class="t-price">$15.49</span><span class="t-period">/ month</span></div>
+                <button class="t-btn" id="tb-netflix"><i data-lucide="plus" style="width:13px;height:13px;"></i> Add to Calculator</button>
+            </div>
+
+            <div class="trending-card" id="tc-spotify" onclick="toggleTemplate('spotify','Spotify',10.99)" style="--brand-gradient:linear-gradient(90deg,#1db954,#15803d)">
+                <div class="t-header">
+                    <div class="t-icon" style="background:#1db954;">S</div>
+                    <span class="t-cat">Music</span>
+                </div>
+                <div class="t-name">Spotify</div>
+                <div class="t-price-row"><span class="t-price">$10.99</span><span class="t-period">/ month</span></div>
+                <button class="t-btn" id="tb-spotify"><i data-lucide="plus" style="width:13px;height:13px;"></i> Add to Calculator</button>
+            </div>
+
+            <div class="trending-card" id="tc-chatgpt" onclick="toggleTemplate('chatgpt','ChatGPT Plus',20.00)" style="--brand-gradient:linear-gradient(90deg,#10a37f,#0d7a60)">
+                <div class="t-header">
+                    <div class="t-icon" style="background:#10a37f;">G</div>
+                    <span class="t-cat">AI Tools</span>
+                </div>
+                <div class="t-name">ChatGPT Plus</div>
+                <div class="t-price-row"><span class="t-price">$20.00</span><span class="t-period">/ month</span></div>
+                <button class="t-btn" id="tb-chatgpt"><i data-lucide="plus" style="width:13px;height:13px;"></i> Add to Calculator</button>
+            </div>
+
+            <div class="trending-card" id="tc-youtube" onclick="toggleTemplate('youtube','YouTube Premium',13.99)" style="--brand-gradient:linear-gradient(90deg,#ff0000,#b91c1c)">
+                <div class="t-header">
+                    <div class="t-icon" style="background:#ff0000;">▶</div>
+                    <span class="t-cat">Entertainment</span>
+                </div>
+                <div class="t-name">YouTube Premium</div>
+                <div class="t-price-row"><span class="t-price">$13.99</span><span class="t-period">/ month</span></div>
+                <button class="t-btn" id="tb-youtube"><i data-lucide="plus" style="width:13px;height:13px;"></i> Add to Calculator</button>
+            </div>
+
+            <div class="trending-card" id="tc-copilot" onclick="toggleTemplate('copilot','GitHub Copilot',10.00)" style="--brand-gradient:linear-gradient(90deg,#8250df,#6e40c9)">
+                <div class="t-header">
+                    <div class="t-icon" style="background:#8250df;">GH</div>
+                    <span class="t-cat">Dev Tools</span>
+                </div>
+                <div class="t-name">GitHub Copilot</div>
+                <div class="t-price-row"><span class="t-price">$10.00</span><span class="t-period">/ month</span></div>
+                <button class="t-btn" id="tb-copilot"><i data-lucide="plus" style="width:13px;height:13px;"></i> Add to Calculator</button>
+            </div>
+
+            <div class="trending-card" id="tc-icloud" onclick="toggleTemplate('icloud','iCloud+',2.99)" style="--brand-gradient:linear-gradient(90deg,#007aff,#0055b3)">
+                <div class="t-header">
+                    <div class="t-icon" style="background:#007aff;">☁</div>
+                    <span class="t-cat">Cloud Storage</span>
+                </div>
+                <div class="t-name">iCloud+</div>
+                <div class="t-price-row"><span class="t-price">$2.99</span><span class="t-period">/ month</span></div>
+                <button class="t-btn" id="tb-icloud"><i data-lucide="plus" style="width:13px;height:13px;"></i> Add to Calculator</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── CALCULATOR ─── -->
+<section class="section" id="calculator">
+    <div class="section-inner">
+        <div class="section-eyebrow">Cost Calculator</div>
+        <h2 class="section-title">How much are you really spending?</h2>
+        <p class="section-sub">Select your active subscriptions and instantly see your true monthly, annual, and daily costs.</p>
+
+        <div class="calc-layout">
+            <div class="calc-panel">
+                <div class="calc-panel-title">
+                    <i data-lucide="sliders-horizontal" style="width:16px;height:16px;color:var(--purple-light);"></i>
+                    Select Subscriptions
+                </div>
+                <div class="preset-chips" id="preset-chips">
+                    <div class="preset-chip" id="chip-netflix" onclick="toggleChip('netflix','Netflix',15.49)">Netflix <span class="preset-chip-price">$15.49</span></div>
+                    <div class="preset-chip" id="chip-spotify" onclick="toggleChip('spotify','Spotify',10.99)">Spotify <span class="preset-chip-price">$10.99</span></div>
+                    <div class="preset-chip" id="chip-chatgpt" onclick="toggleChip('chatgpt','ChatGPT Plus',20.00)">ChatGPT Plus <span class="preset-chip-price">$20.00</span></div>
+                    <div class="preset-chip" id="chip-youtube" onclick="toggleChip('youtube','YouTube Premium',13.99)">YouTube <span class="preset-chip-price">$13.99</span></div>
+                    <div class="preset-chip" id="chip-copilot" onclick="toggleChip('copilot','GitHub Copilot',10.00)">Copilot <span class="preset-chip-price">$10.00</span></div>
+                    <div class="preset-chip" id="chip-icloud" onclick="toggleChip('icloud','iCloud+',2.99)">iCloud+ <span class="preset-chip-price">$2.99</span></div>
+                </div>
+
+                <div class="calc-panel-title" style="font-size:0.8rem;margin-top:16px;">
+                    <i data-lucide="plus-circle" style="width:14px;height:14px;color:var(--muted);"></i>
+                    Add Custom
+                </div>
+                <div class="custom-row">
+                    <input class="calc-input" type="text" id="custom-name" placeholder="Subscription name…">
+                    <input class="calc-input calc-input-price" type="number" id="custom-cost" placeholder="$/mo" step="0.01" min="0">
+                    <button class="calc-add-btn" onclick="addCustom()">
+                        <i data-lucide="plus" style="width:14px;height:14px;"></i> Add
+                    </button>
+                </div>
+                <div id="custom-items-list" style="margin-top:12px;display:flex;flex-direction:column;gap:6px;"></div>
+            </div>
+
+            <div class="calc-panel">
+                <div class="calc-panel-title">
+                    <i data-lucide="bar-chart-2" style="width:16px;height:16px;color:var(--purple-light);"></i>
+                    Cost Summary
+                </div>
+                <div class="results-hero">
+                    <div class="results-big" id="calc-monthly">$0.00</div>
+                    <div class="results-big-lbl">Estimated Monthly Spend</div>
+                </div>
+                <div class="results-grid">
+                    <div class="result-box">
+                        <div class="result-box-val" id="calc-annual">$0.00</div>
+                        <div class="result-box-lbl">Per Year</div>
+                    </div>
+                    <div class="result-box">
+                        <div class="result-box-val" id="calc-daily">$0.00</div>
+                        <div class="result-box-lbl">Per Day</div>
+                    </div>
+                    <div class="result-box">
+                        <div class="result-box-val" id="calc-count">0</div>
+                        <div class="result-box-lbl">Services</div>
+                    </div>
+                    <div class="result-box">
+                        <div class="result-box-val" id="calc-weekly">$0.00</div>
+                        <div class="result-box-lbl">Per Week</div>
+                    </div>
+                </div>
+                <div class="savings-tip" id="savings-tip">
+                    <i data-lucide="sparkles" style="width:16px;height:16px;flex-shrink:0;margin-top:2px;"></i>
+                    <span>Select subscriptions above to see your real cost breakdown. Start adding to find out where your money goes!</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── APP GATEWAYS ─── -->
+<section class="section" id="apps">
+    <div class="section-inner">
+        <div class="section-eyebrow">Access the Platform</div>
+        <h2 class="section-title">Choose your workspace</h2>
+        <p class="section-sub">Instantly access the live web applications or scan to open the mobile app on your device.</p>
+
+        <div class="gateways-grid">
+            <!-- User App -->
+            <div class="gateway-card">
+                <div class="gw-header">
+                    <div class="gw-title-group">
+                        <div class="gw-icon"><i data-lucide="users" style="width:18px;height:18px;"></i></div>
+                        <div class="gw-title">User App</div>
+                    </div>
+                    <div class="status-pill checking" id="status-user">
+                        <span class="status-dot"></span>Checking
+                    </div>
+                </div>
+                <p class="gw-desc">Monitor all your active subscriptions, view analytics, manage payment records, and receive upcoming renewal reminders in one clean dashboard.</p>
+                <div class="gw-actions">
+                    <a href="./user/" class="gw-btn-primary">
+                        <i data-lucide="external-link" style="width:14px;height:14px;"></i> Open Live App
                     </a>
-                    <button onclick="scrollToElement('trending')" class="btn btn-secondary">
-                        Explore Templates
-                    </button>
+                    <a href="http://localhost:3000" target="_blank" class="gw-btn-secondary">
+                        <i data-lucide="monitor" style="width:14px;height:14px;"></i> localhost:3000
+                    </a>
                 </div>
             </div>
 
-            <!-- CSS Dashboard Mockup Preview -->
-            <div class="hero-preview">
-                <div class="mock-header">
-                    <div class="mock-dots">
-                        <div class="mock-dot"></div>
-                        <div class="mock-dot"></div>
-                        <div class="mock-dot"></div>
+            <!-- Admin -->
+            <div class="gateway-card">
+                <div class="gw-header">
+                    <div class="gw-title-group">
+                        <div class="gw-icon"><i data-lucide="shield-check" style="width:18px;height:18px;"></i></div>
+                        <div class="gw-title">Admin Panel</div>
                     </div>
-                    <div class="mock-title">Subtrack Analytics Preview</div>
-                    <i data-lucide="bell" style="width: 14px; height: 14px; color: var(--text-secondary);"></i>
-                </div>
-                <div class="mock-stats-grid">
-                    <div class="mock-card">
-                        <div class="mock-stat-label">Monthly Spend</div>
-                        <div class="mock-stat-val" id="mock-monthly">$42.47</div>
-                        <div class="mock-stat-trend"><i data-lucide="trending-down" style="width: 10px; height: 10px;"></i> -12.4%</div>
-                    </div>
-                    <div class="mock-card">
-                        <div class="mock-stat-label">Active Trackers</div>
-                        <div class="mock-stat-val" id="mock-count">3 Services</div>
-                        <div class="mock-stat-trend" style="color: var(--text-secondary);">Optimal</div>
+                    <div class="status-pill checking" id="status-admin">
+                        <span class="status-dot"></span>Checking
                     </div>
                 </div>
-                <div id="mock-list">
-                    <div class="mock-sub-item">
-                        <div class="mock-sub-brand">
-                            <span class="brand-dot netflix"></span> Netflix Premium
-                        </div>
-                        <span class="mock-sub-price">$15.49</span>
-                    </div>
-                    <div class="mock-sub-item">
-                        <div class="mock-sub-brand">
-                            <span class="brand-dot spotify"></span> Spotify Premium
-                        </div>
-                        <span class="mock-sub-price">$10.99</span>
-                    </div>
-                    <div class="mock-sub-item">
-                        <div class="mock-sub-brand">
-                            <span class="brand-dot chatgpt"></span> ChatGPT Plus
-                        </div>
-                        <span class="mock-sub-price">$20.00</span>
-                    </div>
+                <p class="gw-desc">Administrative workspace for managing users, configuring notification broadcasts, reviewing platform analytics, and updating system settings.</p>
+                <div class="gw-actions">
+                    <a href="./admin/" class="gw-btn-primary">
+                        <i data-lucide="external-link" style="width:14px;height:14px;"></i> Open Admin Panel
+                    </a>
+                    <a href="http://localhost:3001" target="_blank" class="gw-btn-secondary">
+                        <i data-lucide="monitor" style="width:14px;height:14px;"></i> localhost:3001
+                    </a>
                 </div>
             </div>
-        </section>
 
-        <!-- Theme Accent Customizer Widget -->
-        <div class="theme-widget">
-            <span class="theme-label"><i data-lucide="palette" style="width: 14px; height: 14px;"></i> Accent Theme</span>
-            <div class="theme-dot purple active" onclick="setTheme('purple')" title="Cosmic Purple"></div>
-            <div class="theme-dot blue" onclick="setTheme('blue')" title="Electric Blue"></div>
-            <div class="theme-dot emerald" onclick="setTheme('emerald')" title="Neon Emerald"></div>
-            <div class="theme-dot pink" onclick="setTheme('pink')" title="Rose Quartz"></div>
-            <div class="theme-dot cyber" onclick="setTheme('cyber')" title="Cyber Orange"></div>
-        </div>
-
-        <!-- Features Section -->
-        <section id="features" style="margin-bottom: 90px;">
-            <div class="section-header">
-                <h2 class="section-title">Built for Modern Spending</h2>
-                <p class="section-subtitle">Tired of micro-transactions draining your bank account? SubTrack brings premium features to subscription control.</p>
-            </div>
-            <div class="trending-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
-                <div class="card">
-                    <div class="card-header" style="margin-bottom: 14px;">
-                        <div class="card-icon-wrapper">
-                            <i data-lucide="bell"></i>
-                        </div>
+            <!-- Mobile -->
+            <div class="gateway-card">
+                <div class="gw-header">
+                    <div class="gw-title-group">
+                        <div class="gw-icon"><i data-lucide="smartphone" style="width:18px;height:18px;"></i></div>
+                        <div class="gw-title">Mobile App</div>
                     </div>
-                    <h3 class="trending-name" style="margin-bottom: 8px;">Renewal Alert Reminders</h3>
-                    <p class="card-description" style="margin-bottom: 0;">Get customized push alerts and email notifications 3 days before any subscription auto-renews so you never pay for an unwanted service again.</p>
+                    <div class="status-pill checking" id="status-expo">
+                        <span class="status-dot"></span>Checking
+                    </div>
                 </div>
-                <div class="card">
-                    <div class="card-header" style="margin-bottom: 14px;">
-                        <div class="card-icon-wrapper">
-                            <i data-lucide="pie-chart"></i>
+                <p class="gw-desc">Expo-powered native app for iOS & Android with push alerts, offline support, and a mobile-first subscription management experience.</p>
+                <div class="gw-actions">
+                    <div class="expo-panel">
+                        <div class="qr-wrap">
+                            <img id="expo-qr" src="" alt="Expo QR" style="width:120px;height:120px;display:block;">
                         </div>
-                    </div>
-                    <h3 class="trending-name" style="margin-bottom: 8px;">Interactive Cost Statistics</h3>
-                    <p class="card-description" style="margin-bottom: 0;">Analyze your expenses broken down by categories, view annual payment trends, and spot cost increases immediately in our dashboard charts.</p>
-                </div>
-                <div class="card">
-                    <div class="card-header" style="margin-bottom: 14px;">
-                        <div class="card-icon-wrapper">
-                            <i data-lucide="credit-card"></i>
-                        </div>
-                    </div>
-                    <h3 class="trending-name" style="margin-bottom: 8px;">Multi-card Optimization</h3>
-                    <p class="card-description" style="margin-bottom: 0;">Assign different subscriptions to specific payment cards, view payment histories, and isolate subscription billing cycles easily.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Trending Now Subscriptions -->
-        <section class="trending-section" id="trending">
-            <div class="section-header">
-                <h2 class="section-title">Trending Now</h2>
-                <p class="section-subtitle">Quickly import and track popular templates. Click add to calculate your expenses instantly.</p>
-            </div>
-            <div class="trending-grid">
-                <!-- Netflix -->
-                <div class="trending-card" style="--brand-color: #e50914; --brand-rgb: 229, 9, 20;">
-                    <div class="trending-header">
-                        <div class="brand-icon-wrapper">
-                            <i data-lucide="tv"></i>
-                        </div>
-                        <span class="trending-category">Entertainment</span>
-                    </div>
-                    <h3 class="trending-name">Netflix</h3>
-                    <div class="trending-price-info">
-                        <span class="trending-price">$15.49</span>
-                        <span class="trending-period">/ month</span>
-                    </div>
-                    <button class="btn-track" id="btn-track-netflix" onclick="toggleTrackTemplate('netflix', 'Netflix', 15.49)">
-                        <i data-lucide="plus" style="width: 14px; height: 14px;"></i> Add to Calculator
-                    </button>
-                </div>
-
-                <!-- Spotify -->
-                <div class="trending-card" style="--brand-color: #1ed760; --brand-rgb: 30, 215, 96;">
-                    <div class="trending-header">
-                        <div class="brand-icon-wrapper">
-                            <i data-lucide="music"></i>
-                        </div>
-                        <span class="trending-category">Music</span>
-                    </div>
-                    <h3 class="trending-name">Spotify</h3>
-                    <div class="trending-price-info">
-                        <span class="trending-price">$10.99</span>
-                        <span class="trending-period">/ month</span>
-                    </div>
-                    <button class="btn-track" id="btn-track-spotify" onclick="toggleTrackTemplate('spotify', 'Spotify', 10.99)">
-                        <i data-lucide="plus" style="width: 14px; height: 14px;"></i> Add to Calculator
-                    </button>
-                </div>
-
-                <!-- ChatGPT Plus -->
-                <div class="trending-card" style="--brand-color: #10a37f; --brand-rgb: 16, 163, 127;">
-                    <div class="trending-header">
-                        <div class="brand-icon-wrapper">
-                            <i data-lucide="cpu"></i>
-                        </div>
-                        <span class="trending-category">Artificial Intelligence</span>
-                    </div>
-                    <h3 class="trending-name">ChatGPT Plus</h3>
-                    <div class="trending-price-info">
-                        <span class="trending-price">$20.00</span>
-                        <span class="trending-period">/ month</span>
-                    </div>
-                    <button class="btn-track" id="btn-track-chatgpt" onclick="toggleTrackTemplate('chatgpt', 'ChatGPT Plus', 20.00)">
-                        <i data-lucide="plus" style="width: 14px; height: 14px;"></i> Add to Calculator
-                    </button>
-                </div>
-
-                <!-- YouTube Premium -->
-                <div class="trending-card" style="--brand-color: #ff0000; --brand-rgb: 255, 0, 0;">
-                    <div class="trending-header">
-                        <div class="brand-icon-wrapper">
-                            <i data-lucide="play"></i>
-                        </div>
-                        <span class="trending-category">Entertainment</span>
-                    </div>
-                    <h3 class="trending-name">YouTube Premium</h3>
-                    <div class="trending-price-info">
-                        <span class="trending-price">$13.99</span>
-                        <span class="trending-period">/ month</span>
-                    </div>
-                    <button class="btn-track" id="btn-track-youtube" onclick="toggleTrackTemplate('youtube', 'YouTube Premium', 13.99)">
-                        <i data-lucide="plus" style="width: 14px; height: 14px;"></i> Add to Calculator
-                    </button>
-                </div>
-
-                <!-- GitHub Copilot -->
-                <div class="trending-card" style="--brand-color: #8250df; --brand-rgb: 130, 80, 223;">
-                    <div class="trending-header">
-                        <div class="brand-icon-wrapper">
-                            <i data-lucide="code-2"></i>
-                        </div>
-                        <span class="trending-category">Developer Tools</span>
-                    </div>
-                    <h3 class="trending-name">GitHub Copilot</h3>
-                    <div class="trending-price-info">
-                        <span class="trending-price">$10.00</span>
-                        <span class="trending-period">/ month</span>
-                    </div>
-                    <button class="btn-track" id="btn-track-copilot" onclick="toggleTrackTemplate('copilot', 'GitHub Copilot', 10.00)">
-                        <i data-lucide="plus" style="width: 14px; height: 14px;"></i> Add to Calculator
-                    </button>
-                </div>
-
-                <!-- iCloud+ -->
-                <div class="trending-card" style="--brand-color: #007aff; --brand-rgb: 0, 122, 255;">
-                    <div class="trending-header">
-                        <div class="brand-icon-wrapper">
-                            <i data-lucide="cloud"></i>
-                        </div>
-                        <span class="trending-category">Cloud Storage</span>
-                    </div>
-                    <h3 class="trending-name">iCloud+</h3>
-                    <div class="trending-price-info">
-                        <span class="trending-price">$2.99</span>
-                        <span class="trending-period">/ month</span>
-                    </div>
-                    <button class="btn-track" id="btn-track-icloud" onclick="toggleTrackTemplate('icloud', 'iCloud+', 2.99)">
-                        <i data-lucide="plus" style="width: 14px; height: 14px;"></i> Add to Calculator
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Billing Cost Calculator -->
-        <section class="calc-section" id="calculator">
-            <div class="section-header">
-                <h2 class="section-title">Billing Cost Calculator</h2>
-                <p class="section-subtitle">Real-time stats representing your recurring payments. Enable presets or add your custom contracts below.</p>
-            </div>
-            <div class="calc-grid">
-                <!-- Checkboxes and custom items -->
-                <div class="calc-inputs">
-                    <div>
-                        <div class="calc-group-title">Subscription Presets</div>
-                        <div class="calc-checkboxes">
-                            <div class="calc-checkbox-card" id="card-netflix" onclick="toggleCalculatorCheckbox('netflix', 'Netflix', 15.49)">
-                                <input type="checkbox" id="chk-netflix" pointer-events="none" />
-                                <div class="calc-checkbox-label">
-                                    Netflix
-                                    <span>$15.49/mo</span>
-                                </div>
-                            </div>
-                            <div class="calc-checkbox-card" id="card-spotify" onclick="toggleCalculatorCheckbox('spotify', 'Spotify', 10.99)">
-                                <input type="checkbox" id="chk-spotify" pointer-events="none" />
-                                <div class="calc-checkbox-label">
-                                    Spotify
-                                    <span>$10.99/mo</span>
-                                </div>
-                            </div>
-                            <div class="calc-checkbox-card" id="card-chatgpt" onclick="toggleCalculatorCheckbox('chatgpt', 'ChatGPT Plus', 20.00)">
-                                <input type="checkbox" id="chk-chatgpt" pointer-events="none" />
-                                <div class="calc-checkbox-label">
-                                    ChatGPT Plus
-                                    <span>$20.00/mo</span>
-                                </div>
-                            </div>
-                            <div class="calc-checkbox-card" id="card-youtube" onclick="toggleCalculatorCheckbox('youtube', 'YouTube Premium', 13.99)">
-                                <input type="checkbox" id="chk-youtube" pointer-events="none" />
-                                <div class="calc-checkbox-label">
-                                    YouTube Premium
-                                    <span>$13.99/mo</span>
-                                </div>
-                            </div>
-                            <div class="calc-checkbox-card" id="card-copilot" onclick="toggleCalculatorCheckbox('copilot', 'GitHub Copilot', 10.00)">
-                                <input type="checkbox" id="chk-copilot" pointer-events="none" />
-                                <div class="calc-checkbox-label">
-                                    GitHub Copilot
-                                    <span>$10.00/mo</span>
-                                </div>
-                            </div>
-                            <div class="calc-checkbox-card" id="card-icloud" onclick="toggleCalculatorCheckbox('icloud', 'iCloud+', 2.99)">
-                                <input type="checkbox" id="chk-icloud" pointer-events="none" />
-                                <div class="calc-checkbox-label">
-                                    iCloud+
-                                    <span>$2.99/mo</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Custom item form -->
-                    <div>
-                        <div class="calc-group-title">Add Custom Subscriptions</div>
-                        <div class="custom-item-form">
-                            <input type="text" id="custom-name" placeholder="Subscription Name (e.g. Gym, Broadband)" class="custom-input" />
-                            <input type="number" id="custom-cost" placeholder="Cost ($/mo)" class="custom-input" style="max-width: 120px;" step="0.01" />
-                            <button class="btn-add-custom" onclick="addCustomItem()">
-                                <i data-lucide="plus" style="width: 16px; height: 16px; margin-right: 4px;"></i> Add
+                        <span class="expo-ip-label">Expo Server IP / URL</span>
+                        <input type="text" id="local-ip" class="expo-ip-input" placeholder="e.g. 192.168.1.100 or exp://...">
+                        <div class="expo-url-display">
+                            <span id="expo-url">exp://192.168.43.198:8081</span>
+                            <button class="expo-copy-btn" onclick="copyExpoUrl()">
+                                <i data-lucide="copy" style="width:12px;height:12px;"></i>
                             </button>
                         </div>
                     </div>
-                </div>
-
-                <!-- Live Cost Calculations -->
-                <div class="calc-results">
-                    <div class="results-header">
-                        <div class="results-title">Calculated Costs Summary</div>
-                        <div class="results-total-box">
-                            <div class="results-price" id="calc-monthly-total">$0.00</div>
-                            <div class="results-price-label">Estimated Monthly Bill</div>
-                        </div>
-                    </div>
-
-                    <div class="results-stats-row">
-                        <div class="results-stat-box">
-                            <div class="results-stat-num" id="calc-annual-total">$0.00</div>
-                            <div class="results-stat-lbl">Annual Cost</div>
-                        </div>
-                        <div class="results-stat-box">
-                            <div class="results-stat-num" id="calc-daily-total">$0.00</div>
-                            <div class="results-stat-lbl">Daily Cost</div>
-                        </div>
-                    </div>
-
-                    <div class="results-footer">
-                        <div class="results-tip">
-                            <i data-lucide="sparkles"></i>
-                            <div>
-                                <span class="saving-bold">Optimization Tip:</span> You are currently tracking <span id="calc-count">0</span> items. Saving just <span class="saving-bold">$15/month</span> accumulates to <span class="saving-bold">$180 saved annually</span>!
-                            </div>
-                        </div>
-                    </div>
+                    <a id="expo-link" href="exp://192.168.43.198:8081" class="gw-btn-primary">
+                        <i data-lucide="external-link" style="width:14px;height:14px;"></i> Launch on Device
+                    </a>
                 </div>
             </div>
-        </section>
-
-        <!-- Platform Applications Workspace Section -->
-        <section id="workspaces" style="margin-bottom: 90px; position: relative; z-index: 1;">
-            <div class="section-header">
-                <h2 class="section-title">Access the Applications</h2>
-                <p class="section-subtitle">Instantly launch the live web platforms or scan the Metro QR code to run the mobile app on your physical device.</p>
-            </div>
-
-            <!-- Dev Server Portal Cards -->
-            <div class="portal-grid">
-                <!-- User App Card -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title-group">
-                            <div class="card-icon-wrapper">
-                                <i data-lucide="users"></i>
-                            </div>
-                            <h2 class="card-title">User Web App</h2>
-                        </div>
-                        <div class="status-badge checking" id="status-user">
-                            <span class="pulse-dot"></span>Checking
-                        </div>
-                    </div>
-                    <p class="card-description">The consumer interface allowing users to monitor active subscriptions, add payment transactions, check upcoming alerts, and view visual analytics.</p>
-                    <div class="card-actions">
-                        <a href="./user/" class="btn btn-primary">
-                            <i data-lucide="external-link"></i> Open Live Web App
-                        </a>
-                        <a href="http://localhost:3000" target="_blank" class="btn btn-secondary">
-                            <i data-lucide="terminal"></i> Local Dev (Port 3000)
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Admin Dashboard Card -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title-group">
-                            <div class="card-icon-wrapper">
-                                <i data-lucide="shield-check"></i>
-                            </div>
-                            <h2 class="card-title">Admin Dashboard</h2>
-                        </div>
-                        <div class="status-badge checking" id="status-admin">
-                            <span class="pulse-dot"></span>Checking
-                        </div>
-                    </div>
-                    <p class="card-description">Administrative workspace for configuration settings, user management lists, broad notification broadcasts, and platform analytics summary.</p>
-                    <div class="card-actions">
-                        <a href="./admin/" class="btn btn-primary">
-                            <i data-lucide="external-link"></i> Open Live Dashboard
-                        </a>
-                        <a href="http://localhost:3001" target="_blank" class="btn btn-secondary">
-                            <i data-lucide="terminal"></i> Local Dev (Port 3001)
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Mobile App Card -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title-group">
-                            <div class="card-icon-wrapper">
-                                <i data-lucide="smartphone"></i>
-                            </div>
-                            <h2 class="card-title">Mobile Expo App</h2>
-                        </div>
-                        <div class="status-badge checking" id="status-expo">
-                            <span class="pulse-dot"></span>Checking
-                        </div>
-                    </div>
-                    <p class="card-description">Expo-powered native iOS & Android subscription management app, designed for push alerts and mobile-first experience.</p>
-                    
-                    <div class="card-actions" style="align-items: center;">
-                        <div class="mobile-config-panel">
-                            <!-- Dynamic QR Code Container -->
-                            <div class="qr-container">
-                                <img id="expo-qr" src="" alt="Expo Go QR Code" style="width: 130px; height: 130px; display: block;" />
-                            </div>
-                            
-                            <!-- Dynamic IP Input field for Expo -->
-                            <div class="local-ip-wrapper">
-                                <label for="local-ip">Expo Server Host IP / URL</label>
-                                <input type="text" id="local-ip" placeholder="e.g. 192.168.1.50 or exp://..." class="ip-input-field" />
-                            </div>
-
-                            <div class="expo-url-box">
-                                <p>Expo Go Link</p>
-                                <div class="expo-url-code">
-                                    <span id="expo-url">exp://localhost:8081</span>
-                                    <button class="copy-icon-btn" onclick="copyExpoUrl()" title="Copy Link">
-                                        <i data-lucide="copy" style="width: 14px; height: 14px;"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <a id="expo-link" href="#" class="btn btn-primary">
-                            <i data-lucide="external-link"></i> Launch on Device
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-
-
-            <!-- Architecture Flow Info -->
-            <div class="architecture-section" style="margin-bottom: 20px;">
-                <h3 class="arch-title">
-                    <i data-lucide="activity" style="color: var(--accent-primary);"></i> System Architecture Flow
-                </h3>
-                <div class="arch-flow">
-                    <div class="arch-node">📱 Expo Mobile App</div>
-                    <div class="arch-arrow"><i data-lucide="chevrons-right"></i></div>
-                    <div class="arch-node">💻 Vite React Hub (User & Admin)</div>
-                    <div class="arch-arrow"><i data-lucide="chevrons-right"></i></div>
-                    <div class="arch-node">🔥 Firebase Cloud Services</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer>
-            <div class="footer-links">
-                <a href="https://github.com/Rudra-Narayan-Swain/SubTrack" target="_blank">
-                    <i data-lucide="github"></i> Repository
-                </a>
-                <a href="https://console.firebase.google.com/" target="_blank">
-                    <i data-lucide="database"></i> Firebase Console
-                </a>
-            </div>
-            <p>&copy; 2026 SubTrack Platform. Powered by Firebase, React, and Expo.</p>
-        </footer>
+        </div>
     </div>
+</section>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="toast">
-        <i data-lucide="check" class="toast-icon"></i>
-        <span id="toast-text">Copied to clipboard!</span>
+<!-- ─── FOOTER ─── -->
+<footer>
+    <div class="footer-inner">
+        <a href="#" class="footer-logo">
+            <div class="logo-icon"><i data-lucide="bell-ring" style="width:14px;height:14px;"></i></div>
+            SubTrack
+        </a>
+        <div class="footer-links">
+            <a href="https://github.com/Rudra-Narayan-Swain/SubTrack" target="_blank">
+                <i data-lucide="github" style="width:14px;height:14px;"></i> Repository
+            </a>
+            <a href="https://console.firebase.google.com/" target="_blank">
+                <i data-lucide="database" style="width:14px;height:14px;"></i> Firebase Console
+            </a>
+            <a href="./user/">
+                <i data-lucide="users" style="width:14px;height:14px;"></i> User App
+            </a>
+            <a href="./admin/">
+                <i data-lucide="shield" style="width:14px;height:14px;"></i> Admin Panel
+            </a>
+        </div>
+        <p class="footer-copy">&copy; 2026 SubTrack Platform · Built with Firebase, React & Expo</p>
     </div>
+</footer>
 
-    <!-- Scripts -->
-    <script>
-        // Init Lucide Icons
+<!-- ─── TOAST ─── -->
+<div class="toast" id="toast">
+    <i data-lucide="check-circle" style="width:16px;height:16px;color:var(--green-light);"></i>
+    <span id="toast-text">Done!</span>
+</div>
+
+<script>
+    lucide.createIcons();
+
+    // ── CARD GLOW EFFECT ──
+    document.querySelectorAll('.gateway-card, .bento-card').forEach(card => {
+        card.addEventListener('mousemove', e => {
+            const r = card.getBoundingClientRect();
+            card.style.setProperty('--x', `${e.clientX - r.left}px`);
+            card.style.setProperty('--y', `${e.clientY - r.top}px`);
+        });
+    });
+
+    // ── ANIMATED COUNTERS ──
+    function animateCounter(el, target, prefix = '', duration = 2000) {
+        let start = null;
+        const step = ts => {
+            if (!start) start = ts;
+            const progress = Math.min((ts - start) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            el.textContent = prefix + Math.floor(eased * target).toLocaleString();
+            if (progress < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+    }
+
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateCounter(document.getElementById('counter-subs'), 12400);
+                animateCounter(document.getElementById('counter-saved'), 47, '$');
+                animateCounter(document.getElementById('counter-alerts'), 98200);
+                observer.disconnect();
+            }
+        });
+    }, { threshold: 0.3 });
+    observer.observe(document.querySelector('.stats-strip'));
+
+    // ── TOAST ──
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        document.getElementById('toast-text').textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    // ── COPY UTILITY ──
+    function copyText(text, msg) {
+        navigator.clipboard.writeText(text).then(() => showToast(msg || 'Copied!')).catch(() => {});
+    }
+
+    // ── CALCULATOR STATE ──
+    let selected = {};  // key -> {name, cost}
+    let customs = [];
+    let customCounter = 0;
+
+    function recalculate() {
+        let total = Object.values(selected).reduce((s, v) => s + v.cost, 0)
+                  + customs.reduce((s, v) => s + v.cost, 0);
+        const count = Object.keys(selected).length + customs.length;
+
+        document.getElementById('calc-monthly').textContent = `$${total.toFixed(2)}`;
+        document.getElementById('calc-annual').textContent = `$${(total * 12).toFixed(2)}`;
+        document.getElementById('calc-daily').textContent = `$${(total / 30.44).toFixed(2)}`;
+        document.getElementById('calc-weekly').textContent = `$${(total / 4.33).toFixed(2)}`;
+        document.getElementById('calc-count').textContent = count;
+
+        const tip = document.getElementById('savings-tip').querySelector('span');
+        if (count === 0) {
+            tip.textContent = 'Select subscriptions above to see your real cost breakdown. Start adding to find out where your money goes!';
+        } else if (total > 100) {
+            tip.textContent = `💡 You're spending $${(total * 12).toFixed(0)} per year. Cancelling just one unused service could save $${(total * 0.15).toFixed(0)} annually!`;
+        } else {
+            tip.textContent = `✓ Tracking ${count} service${count !== 1 ? 's' : ''}. Stay on top of renewals to avoid surprise charges.`;
+        }
+
+        // Update hero mockup
+        document.getElementById('mock-monthly').textContent = `$${total.toFixed(2)}`;
+        document.getElementById('mock-count').textContent = `${count} Active`;
+    }
+
+    function toggleChip(key, name, cost) {
+        const chip = document.getElementById(`chip-${key}`);
+        if (selected[key]) {
+            delete selected[key];
+            chip.classList.remove('active');
+        } else {
+            selected[key] = { name, cost };
+            chip.classList.add('active');
+        }
+        // Sync trending card button
+        syncTrendingBtn(key);
+        recalculate();
+    }
+
+    function toggleTemplate(key, name, cost) {
+        toggleChip(key, name, cost);
+        showToast(selected[key] ? `${name} added to calculator!` : `${name} removed.`);
+    }
+
+    function syncTrendingBtn(key) {
+        const btn = document.getElementById(`tb-${key}`);
+        if (!btn) return;
+        if (selected[key]) {
+            btn.classList.add('added');
+            btn.innerHTML = '<i data-lucide="check" style="width:13px;height:13px;"></i> Added';
+        } else {
+            btn.classList.remove('added');
+            btn.innerHTML = '<i data-lucide="plus" style="width:13px;height:13px;"></i> Add to Calculator';
+        }
+        lucide.createIcons();
+    }
+
+    function addCustom() {
+        const name = document.getElementById('custom-name').value.trim();
+        const cost = parseFloat(document.getElementById('custom-cost').value);
+        if (!name || isNaN(cost) || cost <= 0) {
+            showToast('Please enter a valid name and price.');
+            return;
+        }
+        customCounter++;
+        const id = customCounter;
+        customs.push({ id, name, cost });
+
+        const row = document.createElement('div');
+        row.id = `custom-row-${id}`;
+        row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 12px;';
+        row.innerHTML = `
+            <span style="font-size:0.82rem;font-weight:600;color:#fff;">${name}</span>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <span style="font-size:0.82rem;font-weight:700;color:var(--purple-light);">$${cost.toFixed(2)}/mo</span>
+                <button onclick="removeCustom(${id})" style="background:none;border:none;color:var(--muted);cursor:pointer;display:flex;align-items:center;">
+                    <i data-lucide="x" style="width:14px;height:14px;"></i>
+                </button>
+            </div>`;
+        document.getElementById('custom-items-list').appendChild(row);
         lucide.createIcons();
 
-        // Mouse Move Card Glow Highlight Effect
-        const cards = document.querySelectorAll('.card, .trending-card, .calc-grid, .hero-preview');
-        cards.forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                card.style.setProperty('--x', `${x}px`);
-                card.style.setProperty('--y', `${y}px`);
-            });
-        });
+        document.getElementById('custom-name').value = '';
+        document.getElementById('custom-cost').value = '';
+        recalculate();
+        showToast(`${name} added!`);
+    }
 
-        // Theme Accent Customizer Configurations
-        const themes = {
-            purple: {
-                primary: '#8b5cf6',
-                primaryRgb: '139, 92, 246',
-                secondary: '#6366f1',
-                secondaryRgb: '99, 102, 241',
-                glow: 'rgba(139, 92, 246, 0.12)'
-            },
-            blue: {
-                primary: '#3b82f6',
-                primaryRgb: '59, 130, 246',
-                secondary: '#0ea5e9',
-                secondaryRgb: '14, 165, 233',
-                glow: 'rgba(59, 130, 246, 0.12)'
-            },
-            emerald: {
-                primary: '#10b981',
-                primaryRgb: '16, 185, 129',
-                secondary: '#06b6d4',
-                secondaryRgb: '6, 182, 212',
-                glow: 'rgba(16, 185, 129, 0.12)'
-            },
-            pink: {
-                primary: '#ec4899',
-                primaryRgb: '236, 72, 153',
-                secondary: '#f43f5e',
-                secondaryRgb: '244, 63, 94',
-                glow: 'rgba(236, 72, 153, 0.12)'
-            },
-            cyber: {
-                primary: '#f97316',
-                primaryRgb: '249, 115, 22',
-                secondary: '#eab308',
-                secondaryRgb: '234, 179, 8',
-                glow: 'rgba(249, 115, 22, 0.12)'
-            }
-        };
+    function removeCustom(id) {
+        customs = customs.filter(c => c.id !== id);
+        const row = document.getElementById(`custom-row-${id}`);
+        if (row) row.remove();
+        recalculate();
+    }
 
-        function setTheme(themeKey) {
-            const theme = themes[themeKey];
-            if (!theme) return;
+    recalculate();
 
-            document.documentElement.style.setProperty('--accent-primary', theme.primary);
-            document.documentElement.style.setProperty('--accent-primary-rgb', theme.primaryRgb);
-            document.documentElement.style.setProperty('--accent-secondary', theme.secondary);
-            document.documentElement.style.setProperty('--accent-secondary-rgb', theme.secondaryRgb);
-            document.documentElement.style.setProperty('--glow-color', theme.glow);
+    // ── EXPO QR SETUP ──
+    const localIpInput = document.getElementById('local-ip');
+    const qrImg = document.getElementById('expo-qr');
+    const urlCode = document.getElementById('expo-url');
+    const launchLink = document.getElementById('expo-link');
 
-            document.querySelectorAll('.theme-dot').forEach(dot => {
-                dot.classList.remove('active');
-            });
-            document.querySelector(`.theme-dot.${themeKey}`).classList.add('active');
+    const initialHostname = window.location.hostname || 'localhost';
+    const isGithubPages = initialHostname.includes('github.io');
 
-            localStorage.setItem('subtrack-theme', themeKey);
+    function buildExpoUrl(host) {
+        host = host.trim();
+        if (!host) return 'exp://192.168.43.198:8081';
+        if (host.startsWith('exp://')) return host;
+        if (host.includes('.ngrok') || host.includes('expo.dev') || host.includes(':'))
+            return `exp://${host.replace(/^exp:\/\//, '')}`;
+        return `exp://${host}:8081`;
+    }
+
+    function updateExpoQR(host) {
+        const url = buildExpoUrl(host);
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(url)}&bgcolor=ffffff&color=000000&margin=4`;
+        urlCode.textContent = url;
+        launchLink.href = url;
+    }
+
+    if (isGithubPages) {
+        localIpInput.value = 'exp://192.168.43.198:8081';
+    } else {
+        localIpInput.value = initialHostname !== 'localhost' ? initialHostname : '192.168.43.198';
+    }
+    updateExpoQR(localIpInput.value);
+
+    localIpInput.addEventListener('input', e => updateExpoQR(e.target.value));
+
+    function copyExpoUrl() {
+        copyText(urlCode.textContent, 'Expo URL copied!');
+    }
+
+    // ── PORT STATUS CHECKER ──
+    async function checkPort(url, badgeId) {
+        const badge = document.getElementById(badgeId);
+        if (!badge) return;
+        const ctrl = new AbortController();
+        const t = setTimeout(() => ctrl.abort(), 1500);
+        try {
+            await fetch(url, { mode: 'no-cors', signal: ctrl.signal });
+            clearTimeout(t);
+            badge.className = 'status-pill online';
+            badge.innerHTML = '<span class="status-dot"></span>Online';
+        } catch {
+            clearTimeout(t);
+            badge.className = 'status-pill offline';
+            badge.innerHTML = '<span class="status-dot"></span>Offline';
         }
+    }
 
-        const savedTheme = localStorage.getItem('subtrack-theme') || 'purple';
-        setTheme(savedTheme);
+    function runChecks() {
+        checkPort('http://localhost:3000', 'status-user');
+        checkPort('http://localhost:3001', 'status-admin');
+        const expoHost = localIpInput.value.trim().replace(/^exp:\/\//, '');
+        const expoCheck = expoHost.includes(':') ? `http://${expoHost}` : `http://${expoHost}:8081`;
+        checkPort(expoCheck, 'status-expo');
+    }
 
-        // Scroll to element helper
-        function scrollToElement(id) {
-            const element = document.getElementById(id);
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-
-
-
-        // Toast Message Alerts
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            const toastText = document.getElementById('toast-text');
-            toastText.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2500);
-        }
-
-        // Clipboard Copy Utility
-        function copyText(text, successMessage) {
-            navigator.clipboard.writeText(text).then(() => {
-                showToast(successMessage || 'Copied!');
-            }).catch(err => {
-                console.error('Copy failed', err);
-            });
-        }
-
-        // Calculator State
-        let selectedSubscriptions = [];
-        let customSubscriptions = [];
-
-        function calculateCosts() {
-            let total = 0;
-            selectedSubscriptions.forEach(sub => total += sub.cost);
-            customSubscriptions.forEach(sub => total += sub.cost);
-
-            // Update DOM totals
-            document.getElementById('calc-monthly-total').textContent = `$${total.toFixed(2)}`;
-            document.getElementById('calc-annual-total').textContent = `$${(total * 12).toFixed(2)}`;
-            document.getElementById('calc-daily-total').textContent = `$${(total / 30.44).toFixed(2)}`;
-            
-            const count = selectedSubscriptions.length + customSubscriptions.length;
-            document.getElementById('calc-count').textContent = count;
-
-            // Also update the Mock Dashboard widgets dynamically!
-            document.getElementById('mock-monthly').textContent = `$${total.toFixed(2)}`;
-            document.getElementById('mock-count').textContent = `${count} Service${count !== 1 ? 's' : ''}`;
-
-            // Rebuild the mock list inside dashboard mockup
-            const mockListContainer = document.getElementById('mock-list');
-            mockListContainer.innerHTML = '';
-            
-            // Render up to 3 items inside dashboard mockup
-            const allItems = [...selectedSubscriptions, ...customSubscriptions];
-            const renderLimit = Math.min(3, allItems.length);
-            
-            for (let i = 0; i < renderLimit; i++) {
-                const item = allItems[i];
-                // Determine a clean class or fallback color
-                const brandClass = item.key ? item.key : 'chatgpt';
-                
-                const itemHtml = `<div class="mock-sub-item">
-                    <div class="mock-sub-brand">
-                        <span class="brand-dot ${brandClass}"></span> ${item.name}
-                    </div>
-                    <span class="mock-sub-price">$${item.cost.toFixed(2)}</span>
-                </div>`;
-                mockListContainer.insertAdjacentHTML('beforeend', itemHtml);
-            }
-
-            if (allItems.length === 0) {
-                mockListContainer.innerHTML = `<div style="text-align: center; color: var(--text-secondary); font-size: 0.8rem; padding: 20px 0;">No active subscriptions. Select templates below or add custom items to begin!</div>`;
-            }
-        }
-
-        // Toggle subscription item from calculator checkboxes
-        function toggleCalculatorCheckbox(key, name, cost) {
-            const index = selectedSubscriptions.findIndex(sub => sub.key === key);
-            const checkbox = document.getElementById(`chk-${key}`);
-            const card = document.getElementById(`card-${key}`);
-            const trendingBtn = document.getElementById(`btn-track-${key}`);
-
-            if (index > -1) {
-                // Remove it
-                selectedSubscriptions.splice(index, 1);
-                if (checkbox) checkbox.checked = false;
-                if (card) card.classList.remove('selected');
-                if (trendingBtn) {
-                    trendingBtn.classList.remove('added');
-                    trendingBtn.innerHTML = '<i data-lucide="plus" style="width: 14px; height: 14px;"></i> Add to Calculator';
-                }
-            } else {
-                // Add it
-                selectedSubscriptions.push({ key, name, cost });
-                if (checkbox) checkbox.checked = true;
-                if (card) card.classList.add('selected');
-                if (trendingBtn) {
-                    trendingBtn.classList.add('added');
-                    trendingBtn.innerHTML = '<i data-lucide="check" style="width: 14px; height: 14px;"></i> Added to Tracker';
-                }
-            }
-            
-            // Re-bind Lucide icons for trending button additions
-            lucide.createIcons();
-            calculateCosts();
-        }
-
-        // Bridge function for "Trending Now" add buttons
-        function toggleTrackTemplate(key, name, cost) {
-            toggleCalculatorCheckbox(key, name, cost);
-            showToast(`${name} tracker status updated!`);
-        }
-
-        // Add custom items
-        let customIdCounter = 0;
-        function addCustomItem() {
-            const nameInput = document.getElementById('custom-name');
-            const costInput = document.getElementById('custom-cost');
-
-            const name = nameInput.value.trim();
-            const cost = parseFloat(costInput.value);
-
-            if (!name || isNaN(cost) || cost <= 0) {
-                showToast("Please enter a valid subscription name and price.");
-                return;
-            }
-
-            customIdCounter++;
-            customSubscriptions.push({
-                id: customIdCounter,
-                name: name,
-                cost: cost
-            });
-
-            // Clear inputs
-            nameInput.value = '';
-            costInput.value = '';
-
-            calculateCosts();
-            showToast(`Added custom tracker: ${name}`);
-        }
-
-        // Initial setup
-        calculateCosts();
-
-        // Hostname variables definition
-        const initialHostname = window.location.hostname || 'localhost';
-        const isGithubPages = initialHostname.includes('github.io');
-
-        // Local Host IP and Expo configuration pinger scripts
-        const localIpInput = document.getElementById('local-ip');
-        const qrImg = document.getElementById('expo-qr');
-        const urlCode = document.getElementById('expo-url');
-        const launchLink = document.getElementById('expo-link');
-
-        function updateExpoQR(host) {
-            let cleanHost = host.trim();
-            if (!cleanHost) {
-                qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=exp://192.168.43.198:8081';
-                urlCode.textContent = 'exp://192.168.43.198:8081';
-                launchLink.href = 'exp://192.168.43.198:8081';
-                return;
-            }
-
-            let expoUrl = '';
-            if (cleanHost.startsWith('exp://')) {
-                expoUrl = cleanHost;
-            } else if (cleanHost.includes('.ngrok') || cleanHost.includes('expo.dev') || cleanHost.includes(':')) {
-                expoUrl = `exp://${cleanHost.replace(/^exp:\/\//, '')}`;
-            } else {
-                expoUrl = `exp://${cleanHost}:8081`;
-            }
-
-            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(expoUrl)}`;
-            urlCode.textContent = expoUrl;
-            launchLink.href = expoUrl;
-        }
-
-        function copyExpoUrl() {
-            copyText(urlCode.textContent, 'Expo Go URL copied!');
-        }
-
-        if (isGithubPages) {
-            localIpInput.value = 'exp://192.168.43.198:8081';
-            updateExpoQR('exp://192.168.43.198:8081');
-        } else {
-            localIpInput.value = initialHostname;
-            updateExpoQR(initialHostname);
-        }
-
-        localIpInput.addEventListener('input', (e) => {
-            updateExpoQR(e.target.value);
-        });
-
-        // Run port checks now that all DOM elements and variables are initialized
-        runAllPortChecks();
-
-        // Dynamic Port Pinger
-        async function checkPortStatus(url, badgeId) {
-            const badge = document.getElementById(badgeId);
-            if (!badge) return;
-
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 1200);
-
-            try {
-                await fetch(url, { mode: 'no-cors', signal: controller.signal });
-                clearTimeout(timeoutId);
-                badge.className = 'status-badge online';
-                badge.innerHTML = '<span class="pulse-dot"></span>Online';
-            } catch (e) {
-                clearTimeout(timeoutId);
-                badge.className = 'status-badge offline';
-                badge.innerHTML = '<span class="pulse-dot"></span>Offline';
-            }
-        }
-
-        function runAllPortChecks() {
-
-            checkPortStatus('http://localhost:3000', 'status-user');
-            checkPortStatus('http://localhost:3001', 'status-admin');
-            
-            let expoHost = localIpInput.value.trim().replace(/^exp:\/\//, '');
-            if (!expoHost || expoHost.includes('192.168.43.198')) {
-                checkPortStatus('http://localhost:8081', 'status-expo');
-            } else {
-                let checkUrl = expoHost.includes(':') ? `http://${expoHost}` : `http://${expoHost}:8081`;
-                checkPortStatus(checkUrl, 'status-expo');
-            }
-        }
-
-        setInterval(runAllPortChecks, 10000);
-
-
-
-
-        // Particles constellation animation
-        const canvas = document.getElementById('particle-canvas');
-        const ctx = canvas.getContext('2d');
-
-        let particles = [];
-        let mouse = { x: null, y: null, radius: 150 };
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 1.5 + 0.5;
-                this.speedX = Math.random() * 0.4 - 0.2;
-                this.speedY = Math.random() * 0.4 - 0.2;
-                this.color = `rgba(255, 255, 255, ${Math.random() * 0.12 + 0.04})`;
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-
-                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-
-                if (mouse.x !== null && mouse.y !== null) {
-                    let dx = mouse.x - this.x;
-                    let dy = mouse.y - this.y;
-                    let distance = Math.hypot(dx, dy);
-                    if (distance < mouse.radius) {
-                        const force = (mouse.radius - distance) / mouse.radius;
-                        const angle = Math.atan2(dy, dx);
-                        this.x -= Math.cos(angle) * force * 1.2;
-                        this.y -= Math.sin(angle) * force * 1.2;
-                    }
-                }
-            }
-            draw() {
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        function initParticles() {
-            particles = [];
-            const count = Math.min(80, Math.floor((canvas.width * canvas.height) / 16000));
-            for (let i = 0; i < count; i++) {
-                particles.push(new Particle());
-            }
-        }
-        initParticles();
-
-        window.addEventListener('mousemove', (e) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
-        });
-
-        window.addEventListener('mouseleave', () => {
-            mouse.x = null;
-            mouse.y = null;
-        });
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            for (let i = 0; i < particles.length; i++) {
-                particles[i].update();
-                particles[i].draw();
-
-                for (let j = i + 1; j < particles.length; j++) {
-                    let dx = particles[i].x - particles[j].x;
-                    let dy = particles[i].y - particles[j].y;
-                    let dist = Math.hypot(dx, dy);
-                    if (dist < 110) {
-                        const alpha = ((110 - dist) / 110) * 0.06;
-                        ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
-                        ctx.lineWidth = 0.5;
-                        ctx.beginPath();
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.stroke();
-                    }
-                }
-            }
-            requestAnimationFrame(animateParticles);
-        }
-        animateParticles();
-    </script>
+    runChecks();
+    setInterval(runChecks, 12000);
+</script>
 </body>
 </html>
