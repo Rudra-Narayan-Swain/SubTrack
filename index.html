@@ -1967,7 +1967,6 @@
 
         // Initial setup
         calculateCosts();
-        runAllPortChecks();
 
         // Hostname variables definition
         const initialHostname = window.location.hostname || 'localhost';
@@ -2017,6 +2016,9 @@
         localIpInput.addEventListener('input', (e) => {
             updateExpoQR(e.target.value);
         });
+
+        // Run port checks now that all DOM elements and variables are initialized
+        runAllPortChecks();
 
         // Dynamic Port Pinger
         async function checkPortStatus(url, badgeId) {
