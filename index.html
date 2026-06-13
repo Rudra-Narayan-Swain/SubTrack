@@ -143,63 +143,7 @@
             color: #ffffff;
         }
 
-        /* Dev Mode Toggle Switch */
-        .dev-toggle-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            padding: 6px 14px;
-            border-radius: 99px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            cursor: pointer;
-            user-select: none;
-            transition: all 0.3s;
-            color: var(--text-secondary);
-        }
 
-        .dev-toggle-wrapper:hover {
-            border-color: var(--accent-primary);
-            color: #ffffff;
-        }
-
-        .dev-toggle-wrapper.active {
-            background: rgba(var(--accent-primary-rgb), 0.1);
-            border-color: var(--accent-primary);
-            color: #ffffff;
-            box-shadow: 0 0 15px rgba(var(--accent-primary-rgb), 0.15);
-        }
-
-        .dev-switch {
-            width: 32px;
-            height: 18px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 99px;
-            position: relative;
-            transition: background 0.3s;
-        }
-
-        .dev-toggle-wrapper.active .dev-switch {
-            background: var(--accent-primary);
-        }
-
-        .dev-switch::after {
-            content: '';
-            position: absolute;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: #ffffff;
-            top: 2px;
-            left: 2px;
-            transition: transform 0.3s;
-        }
-
-        .dev-toggle-wrapper.active .dev-switch::after {
-            transform: translateX(14px);
-        }
 
         /* Main Container */
         .container {
@@ -849,52 +793,7 @@
             font-weight: 600;
         }
 
-        /* Developer Workspace Wrapper (Hidden by default) */
-        #developer-workspace {
-            display: none;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-            position: relative;
-            z-index: 1;
-            margin-top: 40px;
-        }
 
-        #developer-workspace.show {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Dev Mode Header Separator */
-        .dev-separator {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-            margin: 60px 0 40px 0;
-        }
-
-        .dev-separator-line {
-            height: 1px;
-            background: linear-gradient(to right, transparent, rgba(var(--accent-primary-rgb), 0.2), transparent);
-            flex-grow: 1;
-        }
-
-        .dev-separator-badge {
-            background: rgba(var(--accent-primary-rgb), 0.08);
-            border: 1px solid rgba(var(--accent-primary-rgb), 0.2);
-            padding: 6px 14px;
-            border-radius: 99px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--accent-primary);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
 
         /* Dev Gateway Cards Grid */
         .portal-grid {
@@ -1185,114 +1084,7 @@
             color: white;
         }
 
-        /* Developer Command Console */
-        .console-section {
-            background: rgba(8, 8, 10, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 24px;
-            padding: 32px;
-            margin-bottom: 40px;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-        }
 
-        .console-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding-bottom: 16px;
-        }
-
-        .console-title {
-            font-family: var(--font-display);
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .console-tabs {
-            display: flex;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.03);
-            padding: 4px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-        }
-
-        .console-tab {
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            font-weight: 600;
-            padding: 6px 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .console-tab:hover {
-            color: white;
-        }
-
-        .console-tab.active {
-            background: var(--accent-primary);
-            color: white;
-            box-shadow: 0 4px 12px rgba(var(--accent-primary-rgb), 0.2);
-        }
-
-        .console-body {
-            position: relative;
-            background: rgba(0, 0, 0, 0.45);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            border-radius: 14px;
-            padding: 20px;
-            min-height: 140px;
-        }
-
-        .console-code {
-            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-            font-size: 0.85rem;
-            line-height: 1.6;
-            color: #d4d4d8;
-            white-space: pre-wrap;
-            margin: 0;
-            text-align: left;
-        }
-
-        .console-code .comment { color: #52525b; }
-        .console-code .keyword { color: #f43f5e; }
-        .console-code .directory { color: #60a5fa; }
-        .console-code .command { color: #34d399; }
-
-        .console-copy-btn {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            color: var(--text-secondary);
-            border-radius: 8px;
-            padding: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-
-        .console-copy-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.15);
-            color: white;
-        }
 
         /* Architecture Flow */
         .architecture-section {
@@ -1451,8 +1243,6 @@
             .portal-grid { grid-template-columns: 1fr; }
             .arch-flow { flex-direction: column; }
             .arch-arrow { transform: rotate(90deg); margin: 6px 0; animation: none; }
-            .console-header { flex-direction: column; align-items: flex-start; }
-            .console-tabs { width: 100%; justify-content: space-around; }
             .calc-checkboxes { grid-template-columns: 1fr; }
             .custom-item-form { flex-direction: column; }
         }
@@ -1476,13 +1266,7 @@
                 <a href="#features">Features</a>
                 <a href="#trending">Trending Now</a>
                 <a href="#calculator">Calculator</a>
-                
-                <!-- Terminal Dev Switch -->
-                <div class="dev-toggle-wrapper" id="dev-toggle" onclick="toggleDeveloperMode()">
-                    <i data-lucide="terminal" style="width: 14px; height: 14px;"></i>
-                    <span>Dev Gateways</span>
-                    <div class="dev-switch"></div>
-                </div>
+                <a href="#workspaces">Applications</a>
             </div>
         </div>
     </nav>
@@ -1819,14 +1603,11 @@
             </div>
         </section>
 
-        <!-- Developer Mode Workspace (Revealed via header toggle switcher) -->
-        <div id="developer-workspace">
-            <div class="dev-separator">
-                <div class="dev-separator-line"></div>
-                <div class="dev-separator-badge">
-                    <i data-lucide="terminal" style="width: 14px; height: 14px;"></i> Developer Mode Active
-                </div>
-                <div class="dev-separator-line"></div>
+        <!-- Platform Applications Workspace Section -->
+        <section id="workspaces" style="margin-bottom: 90px; position: relative; z-index: 1;">
+            <div class="section-header">
+                <h2 class="section-title">Access the Applications</h2>
+                <p class="section-subtitle">Instantly launch the live web platforms or scan the Metro QR code to run the mobile app on your physical device.</p>
             </div>
 
             <!-- Dev Server Portal Cards -->
@@ -1925,27 +1706,7 @@
                 </div>
             </div>
 
-            <!-- Developer Command Console -->
-            <div class="console-section">
-                <div class="console-header">
-                    <div class="console-title">
-                        <i data-lucide="code" style="color: var(--accent-primary);"></i>
-                        <span>Developer Command Console</span>
-                    </div>
-                    <div class="console-tabs">
-                        <button class="console-tab active" onclick="switchConsoleTab('user', this)">User App</button>
-                        <button class="console-tab" onclick="switchConsoleTab('admin', this)">Admin App</button>
-                        <button class="console-tab" onclick="switchConsoleTab('mobile', this)">Mobile App</button>
-                        <button class="console-tab" onclick="switchConsoleTab('firebase', this)">Firebase</button>
-                    </div>
-                </div>
-                <div class="console-body">
-                    <button class="console-copy-btn" onclick="copyConsoleCommand()" title="Copy Command">
-                        <i data-lucide="copy" style="width: 16px; height: 16px;"></i>
-                    </button>
-                    <pre class="console-code" id="console-content"></pre>
-                </div>
-            </div>
+
 
             <!-- Architecture Flow Info -->
             <div class="architecture-section" style="margin-bottom: 20px;">
@@ -1960,7 +1721,7 @@
                     <div class="arch-node">🔥 Firebase Cloud Services</div>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- Footer -->
         <footer>
@@ -2067,35 +1828,7 @@
             }
         }
 
-        // Toggle Developer Mode Workspace
-        let developerModeActive = false;
 
-        function toggleDeveloperMode() {
-            developerModeActive = !developerModeActive;
-            const workspace = document.getElementById('developer-workspace');
-            const toggleWrapper = document.getElementById('dev-toggle');
-
-            if (developerModeActive) {
-                workspace.style.display = 'block';
-                // Trigger reflow to initiate smooth transition
-                workspace.offsetHeight; 
-                workspace.classList.add('show');
-                toggleWrapper.classList.add('active');
-                showToast("Developer Workspace Active! Local servers checks enabled.");
-                runAllPortChecks();
-                // Scroll down to developer section
-                setTimeout(() => {
-                    workspace.scrollIntoView({ behavior: 'smooth' });
-                }, 100);
-            } else {
-                workspace.classList.remove('show');
-                toggleWrapper.classList.remove('active');
-                showToast("Developer Workspace Hidden.");
-                setTimeout(() => {
-                    workspace.style.display = 'none';
-                }, 600); // match transition speed
-            }
-        }
 
         // Toast Message Alerts
         function showToast(message) {
@@ -2234,6 +1967,7 @@
 
         // Initial setup
         calculateCosts();
+        runAllPortChecks();
 
         // Hostname variables definition
         const initialHostname = window.location.hostname || 'localhost';
@@ -2305,7 +2039,6 @@
         }
 
         function runAllPortChecks() {
-            if (!developerModeActive) return; // Only ping when dev console is open
 
             checkPortStatus('http://localhost:3000', 'status-user');
             checkPortStatus('http://localhost:3001', 'status-admin');
@@ -2321,60 +2054,7 @@
 
         setInterval(runAllPortChecks, 10000);
 
-        // Developer Console commands
-        const consoleCommands = {
-            user: `<span class="comment"># Navigate to the user application directory</span>
-<span class="keyword">cd</span> <span class="directory">user-web</span>
 
-<span class="comment"># Install project dependencies</span>
-<span class="command">npm install</span>
-
-<span class="comment"># Run development hot-reload server (Port 3000)</span>
-<span class="command">npm run dev</span>`,
-            admin: `<span class="comment"># Navigate to the admin workspace directory</span>
-<span class="keyword">cd</span> <span class="directory">admin-web</span>
-
-<span class="comment"># Install required node modules</span>
-<span class="command">npm install</span>
-
-<span class="comment"># Launch dev portal (Port 3001)</span>
-<span class="command">npm run dev</span>`,
-            mobile: `<span class="comment"># Switch to mobile project folder</span>
-<span class="keyword">cd</span> <span class="directory">mobile-app</span>
-
-<span class="comment"># Setup node modules for React Native / Expo</span>
-<span class="command">npm install</span>
-
-<span class="comment"># Start Metro bundler server (Port 8081)</span>
-<span class="command">npx expo start</span>`,
-            firebase: `<span class="comment"># Build Cloud Functions</span>
-<span class="keyword">cd</span> <span class="directory">firebase/functions</span> && <span class="command">npm run build</span>
-
-<span class="comment"># Deploy all Firestore rules/indexes</span>
-<span class="keyword">cd</span> <span class="directory">firebase</span> && <span class="command">firebase deploy --only firestore</span>
-
-<span class="comment"># Build user/admin and deploy firebase hosting</span>
-<span class="keyword">cd</span> <span class="directory">admin-web</span> && <span class="command">npm run build</span> && <span class="keyword">cd</span> <span class="directory">../firebase</span> && <span class="command">firebase deploy --only hosting</span>`
-        };
-
-        let activeConsoleTab = 'user';
-
-        function switchConsoleTab(tabKey, buttonElement) {
-            activeConsoleTab = tabKey;
-            
-            document.querySelectorAll('.console-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            buttonElement.classList.add('active');
-            document.getElementById('console-content').innerHTML = consoleCommands[tabKey];
-        }
-
-        function copyConsoleCommand() {
-            const rawText = document.getElementById('console-content').innerText;
-            copyText(rawText, 'Command copied!');
-        }
-
-        document.getElementById('console-content').innerHTML = consoleCommands['user'];
 
 
         // Particles constellation animation
