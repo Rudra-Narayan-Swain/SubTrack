@@ -11,7 +11,7 @@ config.resolver.sourceExts = [
 config.resolver.assetExts = config.resolver.assetExts.filter((e) => e !== 'cjs');
 
 // Bump to force full Metro cache invalidation.
-config.cacheVersion = 'firebase-rn-fix-v4';
+config.cacheVersion = 'firebase-rn-fix-v6';
 
 // The root cause of "Component auth has not been registered yet":
 //
@@ -31,6 +31,11 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
         case '@firebase/app':
             return {
                 filePath: path.resolve(__dirname, 'node_modules/@firebase/app/dist/index.cjs.js'),
+                type: 'sourceFile',
+            };
+        case '@firebase/component':
+            return {
+                filePath: path.resolve(__dirname, 'node_modules/@firebase/component/dist/index.cjs.js'),
                 type: 'sourceFile',
             };
         case '@firebase/auth':

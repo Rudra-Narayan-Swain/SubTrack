@@ -76,8 +76,16 @@ function MainApp() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const resolvedRef = useRef(false);
     const uidRef = useRef<string | null>(null);
+    const isMounted = useRef(true);
+
+    // Guard all async setState calls — prevents crashes during hot-reload / re-scan
+    useEffect(() => {
+        isMounted.current = true;
+        return () => { isMounted.current = false; };
+    }, []);
 
     const finish = (authenticated: boolean) => {
+        if (!isMounted.current) return;
         setIsAuthenticated(authenticated);
         if (!resolvedRef.current) {
             resolvedRef.current = true;
@@ -151,6 +159,7 @@ function MainApp() {
                     // Listen to user's Firestore document in real-time
                     unsubUserDoc?.();
                     unsubUserDoc = onSnapshot(doc(getDb(), 'users', firebaseUser.uid), async (snap) => {
+                        if (!isMounted.current) return;
                         if (snap.exists()) {
                             const data = snap.data();
                              setUser({ id: snap.id, uid: data.uid || snap.id, ...data } as unknown as User);
@@ -191,8 +200,10 @@ function MainApp() {
                     }, (err) => {
                         console.warn('[Subtrack] User document snapshot failed:', err);
                         // Fallback on error
-                        setUser(initialProfile);
-                        finish(true);
+                        if (isMounted.current) {
+                            setUser(initialProfile);
+                            finish(true);
+                        }
                     });
                 },
                 (error) => {

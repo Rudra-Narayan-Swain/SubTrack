@@ -23,6 +23,7 @@ export const ReminderSettings = ({ navigation, route }: Props) => {
             const granted = await requestPermissions();
             if (!granted) {
                 Alert.alert('Permission Required', 'Please enable notifications in your device settings to use reminders.');
+                setLoading(false);
                 return;
             }
             const triggerDate = new Date();

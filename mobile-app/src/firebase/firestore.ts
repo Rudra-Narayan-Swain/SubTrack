@@ -52,10 +52,18 @@ export const deleteDocument = async (col: string, id: string): Promise<void> => 
 export const subscribeToQuery = <T>(
     col: string,
     constraints: any[],
-    onData: (items: T[]) => void
+    onData: (items: T[]) => void,
+    onError?: (err: Error) => void
 ): Unsubscribe => {
     const q = query(collection(getDb(), col), ...constraints);
-    return onSnapshot(q, (snap) => {
-        onData(snap.docs.map((d) => ({ id: d.id, ...d.data() } as T)));
-    });
+    return onSnapshot(
+        q,
+        (snap) => {
+            onData(snap.docs.map((d) => ({ id: d.id, ...d.data() } as T)));
+        },
+        (err) => {
+            console.warn(`[Subtrack] Firestore listener error (${col}):`, err.message);
+            if (onError) onError(err);
+        }
+    );
 };
