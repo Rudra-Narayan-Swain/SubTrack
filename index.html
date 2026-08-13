@@ -1344,27 +1344,30 @@
                         <div class="gw-icon"><i data-lucide="smartphone" style="width:18px;height:18px;"></i></div>
                         <div class="gw-title">Mobile App</div>
                     </div>
-                    <div class="status-pill checking" id="status-expo">
-                        <span class="status-dot"></span>Checking
+                    <div class="status-pill online" id="status-expo">
+                        <span class="status-dot"></span>Direct Web Ready
                     </div>
                 </div>
-                <p class="gw-desc">Expo-powered native app for iOS & Android with push alerts, offline support, and a mobile-first subscription management experience.</p>
+                <p class="gw-desc">Cross-platform mobile subscription manager. Scan the QR code or click below to launch directly in your mobile browser with zero terminal or setup required.</p>
                 <div class="gw-actions">
+                    <a href="./mobile/" class="gw-btn-primary" style="margin-bottom: 8px;">
+                        <i data-lucide="rocket" style="width:14px;height:14px;"></i> Direct Launch Mobile App
+                    </a>
                     <div class="expo-panel">
                         <div class="qr-wrap">
-                            <img id="expo-qr" src="" alt="Expo QR" style="width:120px;height:120px;display:block;">
+                            <img id="expo-qr" src="" alt="Mobile App QR" style="width:120px;height:120px;display:block;">
                         </div>
-                        <span class="expo-ip-label">Expo Server IP / URL</span>
-                        <input type="text" id="local-ip" class="expo-ip-input" placeholder="e.g. 192.168.1.100 or exp://...">
+                        <span class="expo-ip-label">Scan to Open on Mobile or enter Expo URL</span>
+                        <input type="text" id="local-ip" class="expo-ip-input" placeholder="e.g. ./mobile/ or exp://...">
                         <div class="expo-url-display">
-                            <span id="expo-url">exp://192.168.43.198:8081</span>
+                            <span id="expo-url">./mobile/</span>
                             <button class="expo-copy-btn" onclick="copyExpoUrl()">
                                 <i data-lucide="copy" style="width:12px;height:12px;"></i>
                             </button>
                         </div>
                     </div>
-                    <a id="expo-link" href="exp://192.168.43.198:8081" class="gw-btn-primary">
-                        <i data-lucide="external-link" style="width:14px;height:14px;"></i> Launch on Device
+                    <a id="expo-link" href="./mobile/" class="gw-btn-secondary">
+                        <i data-lucide="external-link" style="width:14px;height:14px;"></i> Open in New Tab
                     </a>
                 </div>
             </div>
@@ -1555,19 +1558,21 @@
 
     recalculate();
 
-    // ── EXPO QR SETUP ──
+    // ── EXPO / MOBILE QR SETUP ──
     const localIpInput = document.getElementById('local-ip');
     const qrImg = document.getElementById('expo-qr');
     const urlCode = document.getElementById('expo-url');
     const launchLink = document.getElementById('expo-link');
 
-    const initialHostname = window.location.hostname || 'localhost';
-    const isGithubPages = initialHostname.includes('github.io');
+    function getDirectMobileUrl() {
+        const path = window.location.pathname.replace(/\/index\.html$/, '').replace(/\/$/, '');
+        return window.location.origin + path + '/mobile/';
+    }
 
     function buildExpoUrl(host) {
-        host = host.trim();
-        if (!host) return 'exp://192.168.43.198:8081';
-        if (host.startsWith('exp://')) return host;
+        host = (host || '').trim();
+        if (!host || host === './mobile/' || host === 'mobile') return getDirectMobileUrl();
+        if (host.startsWith('http://') || host.startsWith('https://') || host.startsWith('exp://')) return host;
         if (host.includes('.ngrok') || host.includes('expo.dev') || host.includes(':'))
             return `exp://${host.replace(/^exp:\/\//, '')}`;
         return `exp://${host}:8081`;
@@ -1580,17 +1585,13 @@
         launchLink.href = url;
     }
 
-    if (isGithubPages) {
-        localIpInput.value = 'exp://192.168.43.198:8081';
-    } else {
-        localIpInput.value = initialHostname !== 'localhost' ? initialHostname : '192.168.43.198';
-    }
-    updateExpoQR(localIpInput.value);
+    localIpInput.value = './mobile/';
+    updateExpoQR('./mobile/');
 
     localIpInput.addEventListener('input', e => updateExpoQR(e.target.value));
 
     function copyExpoUrl() {
-        copyText(urlCode.textContent, 'Expo URL copied!');
+        copyText(urlCode.textContent, 'Mobile App URL copied!');
     }
 
     // ── PORT STATUS CHECKER ──
