@@ -4,16 +4,6 @@ import { initializeAuth, getAuth, getReactNativePersistence } from 'firebase/aut
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getFirestore } from 'firebase/firestore';
 
-// metro.config.js pins:
-//   firebase/auth  → @firebase/auth/dist/rn/index.js   (RN build, has getReactNativePersistence)
-//   @firebase/auth → @firebase/auth/dist/rn/index.js   (same)
-//   @firebase/app  → @firebase/app/dist/index.cjs.js   (CJS, single instance)
-//
-// Without pinning @firebase/app to CJS, Metro resolves it to the ESM browser
-// build ("browser" field in package.json). The RN auth build then gets a
-// DIFFERENT module instance of @firebase/app, splitting the component registry
-// and causing "Component auth has not been registered yet".
-
 const firebaseConfig = {
     apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
     authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -26,8 +16,7 @@ const firebaseConfig = {
 // App singleton — survives hot reloads
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
-// Lazy auth singleton — initialized on first call so all module side-effects
-// (including registerAuth("ReactNative")) have run before we touch the registry.
+// Lazy auth singleton — failsafe initialization
 let _auth: ReturnType<typeof initializeAuth> | undefined;
 export const getAuthInstance = () => {
     if (!_auth) {
@@ -36,11 +25,8 @@ export const getAuthInstance = () => {
                 persistence: getReactNativePersistence(AsyncStorage),
             });
         } catch (e: any) {
-            if (e?.code === 'auth/already-initialized') {
-                _auth = getAuth(app);
-            } else {
-                throw e;
-            }
+            // Fall back to standard getAuth if persistence initialization fails or is already initialized
+            _auth = getAuth(app);
         }
     }
     return _auth;

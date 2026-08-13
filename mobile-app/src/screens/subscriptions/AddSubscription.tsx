@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import {
     View, Text, StyleSheet, TextInput, TouchableOpacity,
-    ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator, SafeAreaView,
+    ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AppStackParamList } from '../../navigation/AppNavigator';

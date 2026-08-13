@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { signOut } from '../../firebase/auth';
 
@@ -33,7 +34,7 @@ export const PendingApprovalScreen = () => {
 
                 {/* Additional Info Box */}
                 <View style={s.infoBox}>
-                    <MaterialCommunityIcons name="info-outline" size={16} color="rgba(255,255,255,0.4)" />
+                    <MaterialCommunityIcons name="information-outline" size={16} color="rgba(255,255,255,0.4)" />
                     <Text style={s.infoText}>
                         If you believe this is a mistake, please contact support or check back in a few minutes.
                     </Text>

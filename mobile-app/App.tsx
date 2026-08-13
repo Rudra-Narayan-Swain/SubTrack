@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Text, View, ActivityIndicator, LogBox } from 'react-native';
+import { Text, View, LogBox } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -17,17 +17,19 @@ import { subscribeToPayments } from './src/services/paymentService';
 import { initNotifications } from './src/services/notificationService';
 import type { User } from './src/types';
 
-// Suppress the expo-notifications Expo Go warning
+// Suppress Expo Go environment warnings & deprecations
 LogBox.ignoreLogs([
     'expo-notifications: Android Push notifications',
     '`expo-notifications` functionality is not fully supported in Expo Go',
+    'SafeAreaView has been deprecated and will be removed in a future release',
+    '"info-outline" is not a valid icon name',
 ]);
 
-// Keep splash screen visible briefly during startup
+// Hide splash screen immediately on mount
 try {
-    SplashScreen.preventAutoHideAsync().catch(() => { });
+    SplashScreen.hideAsync().catch(() => { });
 } catch {
-    // Ignore if not supported in dev build
+    // Ignore
 }
 
 // ─── Error Boundary ────────────────────────────────────────────────────────────
@@ -53,31 +55,10 @@ class ErrorBoundary extends React.Component<
     }
 }
 
-// ─── Loading Screen ────────────────────────────────────────────────────────────
-function LoadingScreen() {
-    return (
-        <View style={{ flex: 1, backgroundColor: '#07080f', alignItems: 'center', justifyContent: 'center' }}>
-            <View style={{
-                width: 80, height: 80, borderRadius: 22,
-                backgroundColor: '#5b5fff',
-                alignItems: 'center', justifyContent: 'center',
-            }}>
-                <Text style={{ fontSize: 40, fontWeight: '800', color: '#fff' }}>S</Text>
-            </View>
-            <Text style={{ marginTop: 18, fontSize: 22, fontWeight: '700', color: '#fff', letterSpacing: 1 }}>
-                Subtrack
-            </Text>
-            <ActivityIndicator style={{ marginTop: 20 }} color="#5b5fff" size="large" />
-        </View>
-    );
-}
-
 // ─── Main App ──────────────────────────────────────────────────────────────────
 function MainApp() {
     const { user, setUser, setSubscriptions, setPayments, reset } = useStore();
-    const [isReady, setIsReady] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const resolvedRef = useRef(false);
     const uidRef = useRef<string | null>(null);
     const isMounted = useRef(true);
 
@@ -86,20 +67,6 @@ function MainApp() {
         return () => { isMounted.current = false; };
     }, []);
 
-    const finish = (authenticated: boolean) => {
-        if (!isMounted.current) return;
-        setIsAuthenticated(authenticated);
-        if (!resolvedRef.current) {
-            resolvedRef.current = true;
-            setIsReady(true);
-            try {
-                SplashScreen.hideAsync().catch(() => { });
-            } catch {
-                // Ignore
-            }
-        }
-    };
-
     useEffect(() => {
         try { initNotifications(); } catch { }
 
@@ -107,13 +74,6 @@ function MainApp() {
         let unsubSubs: (() => void) | null = null;
         let unsubPayments: (() => void) | null = null;
         let unsubUserDoc: (() => void) | null = null;
-
-        // Guaranteed fallback timeout: Never stay on buffering screen longer than 2.5 seconds
-        const timeout = setTimeout(() => {
-            if (!resolvedRef.current) {
-                finish(false);
-            }
-        }, 2500);
 
         const startDataListeners = (uid: string) => {
             unsubSubs?.();
@@ -128,8 +88,6 @@ function MainApp() {
             unsubAuth = onAuthStateChanged(
                 auth,
                 async (firebaseUser) => {
-                    clearTimeout(timeout);
-
                     if (!firebaseUser) {
                         unsubSubs?.();
                         unsubPayments?.();
@@ -139,11 +97,10 @@ function MainApp() {
                         unsubUserDoc = null;
                         uidRef.current = null;
                         reset();
-                        finish(false);
+                        if (isMounted.current) setIsAuthenticated(false);
                         return;
                     }
 
-                    // 1. Instantly finish loading and transition UI with auth user data
                     const initialProfile: User = {
                         uid: firebaseUser.uid,
                         name: firebaseUser.displayName ?? firebaseUser.email?.split('@')[0] ?? 'User',
@@ -158,9 +115,9 @@ function MainApp() {
                         updatedAt: new Date().toISOString(),
                     };
                     setUser(initialProfile);
-                    finish(true);
+                    if (isMounted.current) setIsAuthenticated(true);
 
-                    // 2. Hydrate user profile & real-time listeners asynchronously
+                    // Hydrate user profile in background
                     unsubUserDoc?.();
                     unsubUserDoc = onSnapshot(doc(getDb(), 'users', firebaseUser.uid), async (snap) => {
                         if (!isMounted.current) return;
@@ -202,29 +159,24 @@ function MainApp() {
                     });
                 },
                 (error) => {
-                    clearTimeout(timeout);
                     console.error('[Subtrack] Auth state error:', error);
                     reset();
-                    finish(false);
+                    if (isMounted.current) setIsAuthenticated(false);
                 }
             );
         } catch (e) {
-            clearTimeout(timeout);
             console.error('[Subtrack] Firebase init error:', e);
             reset();
-            finish(false);
+            if (isMounted.current) setIsAuthenticated(false);
         }
 
         return () => {
-            clearTimeout(timeout);
             unsubAuth?.();
             unsubSubs?.();
             unsubPayments?.();
             unsubUserDoc?.();
         };
     }, []);
-
-    if (!isReady) return <LoadingScreen />;
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
