@@ -6,7 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
+import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 import { getAuthInstance, getDb } from './src/firebase/firebaseConfig';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { AuthNavigator } from './src/navigation/AuthNavigator';
@@ -17,20 +17,17 @@ import { subscribeToPayments } from './src/services/paymentService';
 import { initNotifications } from './src/services/notificationService';
 import type { User } from './src/types';
 
-// Suppress the expo-notifications Expo Go warning — it's a known limitation,
-// not an app error. Local notifications still work in development builds.
+// Suppress the expo-notifications Expo Go warning
 LogBox.ignoreLogs([
     'expo-notifications: Android Push notifications',
     '`expo-notifications` functionality is not fully supported in Expo Go',
 ]);
 
-// Keep the splash screen visible while we fetch auth state.
-// Wrapped in a try-catch AND .catch() because in Expo Go this may
-// throw synchronously or return a rejected promise depending on the SDK build.
+// Keep splash screen visible briefly during startup
 try {
     SplashScreen.preventAutoHideAsync().catch(() => { });
 } catch {
-    // Splash screen not available in this environment — safe to ignore
+    // Ignore if not supported in dev build
 }
 
 // ─── Error Boundary ────────────────────────────────────────────────────────────
@@ -84,7 +81,6 @@ function MainApp() {
     const uidRef = useRef<string | null>(null);
     const isMounted = useRef(true);
 
-    // Guard all async setState calls — prevents crashes during hot-reload / re-scan
     useEffect(() => {
         isMounted.current = true;
         return () => { isMounted.current = false; };
@@ -99,13 +95,12 @@ function MainApp() {
             try {
                 SplashScreen.hideAsync().catch(() => { });
             } catch {
-                // Splash screen not available — safe to ignore
+                // Ignore
             }
         }
     };
 
     useEffect(() => {
-        // Init notifications — silently ignore Expo Go limitations
         try { initNotifications(); } catch { }
 
         let unsubAuth: (() => void) | null = null;
@@ -113,15 +108,14 @@ function MainApp() {
         let unsubPayments: (() => void) | null = null;
         let unsubUserDoc: (() => void) | null = null;
 
+        // Guaranteed fallback timeout: Never stay on buffering screen longer than 2.5 seconds
         const timeout = setTimeout(() => {
             if (!resolvedRef.current) {
-                reset();
                 finish(false);
             }
-        }, 5000);
+        }, 2500);
 
         const startDataListeners = (uid: string) => {
-            // Clean up previous listeners before creating new ones
             unsubSubs?.();
             unsubPayments?.();
             unsubSubs = subscribeToSubscriptions(uid, setSubscriptions);
@@ -137,7 +131,6 @@ function MainApp() {
                     clearTimeout(timeout);
 
                     if (!firebaseUser) {
-                        // Clean up data listeners on sign-out
                         unsubSubs?.();
                         unsubPayments?.();
                         unsubUserDoc?.();
@@ -150,12 +143,12 @@ function MainApp() {
                         return;
                     }
 
-                    // Populate initial profile synchronously from firebaseUser to enable instant navigation transition
+                    // 1. Instantly finish loading and transition UI with auth user data
                     const initialProfile: User = {
                         uid: firebaseUser.uid,
                         name: firebaseUser.displayName ?? firebaseUser.email?.split('@')[0] ?? 'User',
                         email: firebaseUser.email ?? '',
-                        status: 'pending', // Default to pending until Firestore says otherwise
+                        status: 'pending',
                         notificationPrefs: {
                             reminders: true,
                             paymentConfirmations: true,
@@ -165,23 +158,22 @@ function MainApp() {
                         updatedAt: new Date().toISOString(),
                     };
                     setUser(initialProfile);
+                    finish(true);
 
-                    // Listen to user's Firestore document in real-time
+                    // 2. Hydrate user profile & real-time listeners asynchronously
                     unsubUserDoc?.();
                     unsubUserDoc = onSnapshot(doc(getDb(), 'users', firebaseUser.uid), async (snap) => {
                         if (!isMounted.current) return;
                         if (snap.exists()) {
                             const data = snap.data();
-                             setUser({ id: snap.id, uid: data.uid || snap.id, ...data } as unknown as User);
+                            setUser({ id: snap.id, uid: data.uid || snap.id, ...data } as unknown as User);
                             
-                            // Start data listeners if they are not pending or rejected (e.g. approved or admin)
                             if (data.status !== 'pending' && data.status !== 'rejected') {
                                 if (uidRef.current !== firebaseUser.uid) {
                                     uidRef.current = firebaseUser.uid;
                                     startDataListeners(firebaseUser.uid);
                                 }
                             } else {
-                                // If status is pending or rejected, stop data listeners to prevent security rule warnings
                                 unsubSubs?.();
                                 unsubPayments?.();
                                 unsubSubs = null;
@@ -189,7 +181,6 @@ function MainApp() {
                                 uidRef.current = null;
                             }
                         } else {
-                            // If profile document is missing in Firestore, create it!
                             const now = new Date().toISOString();
                             const profileData = {
                                 uid: firebaseUser.uid,
@@ -206,19 +197,13 @@ function MainApp() {
                             };
                             await setDoc(doc(getDb(), 'users', firebaseUser.uid), profileData);
                         }
-                        finish(true);
                     }, (err) => {
-                        console.warn('[Subtrack] User document snapshot failed:', err);
-                        // Fallback on error
-                        if (isMounted.current) {
-                            setUser(initialProfile);
-                            finish(true);
-                        }
+                        console.warn('[Subtrack] User snapshot error:', err);
                     });
                 },
                 (error) => {
                     clearTimeout(timeout);
-                    console.error('[Subtrack] onAuthStateChanged error:', error);
+                    console.error('[Subtrack] Auth state error:', error);
                     reset();
                     finish(false);
                 }
