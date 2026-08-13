@@ -24,8 +24,14 @@ LogBox.ignoreLogs([
     '`expo-notifications` functionality is not fully supported in Expo Go',
 ]);
 
-// Keep the splash screen visible while we fetch auth state
-SplashScreen.preventAutoHideAsync().catch(() => { });
+// Keep the splash screen visible while we fetch auth state.
+// Wrapped in a try-catch AND .catch() because in Expo Go this may
+// throw synchronously or return a rejected promise depending on the SDK build.
+try {
+    SplashScreen.preventAutoHideAsync().catch(() => { });
+} catch {
+    // Splash screen not available in this environment — safe to ignore
+}
 
 // ─── Error Boundary ────────────────────────────────────────────────────────────
 class ErrorBoundary extends React.Component<
@@ -90,7 +96,11 @@ function MainApp() {
         if (!resolvedRef.current) {
             resolvedRef.current = true;
             setIsReady(true);
-            SplashScreen.hideAsync().catch(() => { });
+            try {
+                SplashScreen.hideAsync().catch(() => { });
+            } catch {
+                // Splash screen not available — safe to ignore
+            }
         }
     };
 

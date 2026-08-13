@@ -1,6 +1,6 @@
 @echo off
 echo ==============================================
-echo  SubTrack Git Initialization ^& Push Script
+echo  SubTrack Git Commit ^& Push Script
 echo ==============================================
 echo.
 
@@ -49,7 +49,7 @@ git add .
 
 :: Commit files
 echo [5/5] Committing and pushing files...
-git commit -m "Initial commit"
+git commit -m "Fix Expo Go white screen buffering issue and update configuration"
 git push -u origin main
 
 echo.
