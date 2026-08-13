@@ -16,29 +16,22 @@ const firebaseConfig = {
 // App singleton — survives hot reloads
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
-// Lazy auth singleton — failsafe initialization
-let _auth: ReturnType<typeof initializeAuth> | undefined;
-export const getAuthInstance = () => {
-    if (!_auth) {
-        try {
-            _auth = initializeAuth(app, {
-                persistence: getReactNativePersistence(AsyncStorage),
-            });
-        } catch (e: any) {
-            // Fall back to standard getAuth if persistence initialization fails or is already initialized
-            _auth = getAuth(app);
-        }
-    }
-    return _auth;
-};
+// Auth singleton
+let auth: ReturnType<typeof initializeAuth>;
+try {
+    auth = initializeAuth(app, {
+        persistence: getReactNativePersistence(AsyncStorage),
+    });
+} catch (e: any) {
+    // If it throws, it means auth is already initialized (e.g. during fast refresh)
+    auth = getAuth(app);
+}
 
-// Lazy Firestore singleton
-let _db: ReturnType<typeof getFirestore> | undefined;
-export const getDb = () => {
-    if (!_db) {
-        _db = getFirestore(app);
-    }
-    return _db;
-};
+export const getAuthInstance = () => auth;
+
+// Db singleton
+const db = getFirestore(app);
+
+export const getDb = () => db;
 
 export { app };
