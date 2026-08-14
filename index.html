@@ -1590,28 +1590,40 @@
     const urlCode    = document.getElementById('expo-url');
     const launchLink = document.getElementById('expo-link');
 
-    // exp:// deep-link protocol URL — when scanned by Expo Go or phone camera, opens Expo Go directly
     const EXPO_QR_URL = 'exp://exp.host/@rudra-narayan-swain/subtrack';
     const EXPO_WEB_URL = 'https://expo.dev/@rudra-narayan-swain/subtrack';
 
-    // Generate the QR code client-side — no external API, always works
-    (function initQR() {
+    function initQR() {
+        if (!qrCanvas) return;
         qrCanvas.innerHTML = '';
+        const fallbackApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=170x170&color=0e0e12&bgcolor=ffffff&data=${encodeURIComponent(EXPO_QR_URL)}`;
+
         try {
-            new QRCode(qrCanvas, {
-                text: EXPO_QR_URL,
-                width: 170,
-                height: 170,
-                colorDark: '#0e0e12',
-                colorLight: '#ffffff',
-                correctLevel: QRCode.CorrectLevel.M
-            });
+            if (typeof QRCode !== 'undefined') {
+                new QRCode(qrCanvas, {
+                    text: EXPO_QR_URL,
+                    width: 170,
+                    height: 170,
+                    colorDark: '#0e0e12',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+            } else {
+                qrCanvas.innerHTML = `<img src="${fallbackApiUrl}" alt="Expo QR Code" style="width:170px;height:170px;border-radius:4px;display:block;margin:0 auto;" />`;
+            }
         } catch (err) {
-            qrCanvas.innerHTML = '<div style="width:170px;height:170px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:#666;padding:8px;word-break:break-all;">' + EXPO_QR_URL + '</div>';
+            qrCanvas.innerHTML = `<img src="${fallbackApiUrl}" alt="Expo QR Code" style="width:170px;height:170px;border-radius:4px;display:block;margin:0 auto;" />`;
         }
+
         if (urlCode) urlCode.textContent = EXPO_QR_URL;
         if (launchLink) launchLink.href = EXPO_WEB_URL;
-    })();
+    }
+
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        initQR();
+    } else {
+        window.addEventListener('DOMContentLoaded', initQR);
+    }
 
     function copyExpoUrl() {
         copyText(EXPO_QR_URL, 'Expo URL copied!');
@@ -1621,6 +1633,14 @@
     async function checkPort(url, badgeId) {
         const badge = document.getElementById(badgeId);
         if (!badge) return;
+
+        // If hosted on GitHub Pages or any remote server, mark web apps as Online
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+            badge.className = 'status-pill online';
+            badge.innerHTML = '<span class="status-dot"></span>Online';
+            return;
+        }
+
         const ctrl = new AbortController();
         const t = setTimeout(() => ctrl.abort(), 1500);
         try {
@@ -1638,7 +1658,6 @@
     function runChecks() {
         checkPort('http://localhost:3000', 'status-user');
         checkPort('http://localhost:3001', 'status-admin');
-        // Expo Go status badge stays "Expo Go Ready" — no localhost check needed
     }
 
     runChecks();
