@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -805,15 +806,37 @@
 
         .qr-wrap {
             background: #fff;
-            border-radius: 12px;
-            padding: 12px;
-            display: inline-block;
-            margin-bottom: 12px;
-            transition: transform 0.3s;
+            border-radius: 14px;
+            padding: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
-        .qr-wrap:hover { transform: scale(1.03); }
+        .qr-wrap:hover { transform: scale(1.04); box-shadow: 0 8px 30px rgba(124,58,237,0.25); }
+        #qr-canvas { display: block; border-radius: 4px; }
+        #qr-canvas canvas { display: block !important; }
 
-        .expo-ip-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 700; display: block; margin-bottom: 6px; }
+        .qr-loading {
+            width: 160px; height: 160px;
+            display: flex; align-items: center; justify-content: center;
+            flex-direction: column; gap: 8px;
+            color: var(--muted); font-size: 0.75rem;
+        }
+        .qr-spinner {
+            width: 28px; height: 28px;
+            border: 3px solid rgba(124,58,237,0.2);
+            border-top-color: var(--purple);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .expo-url-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 700; display: block; margin-bottom: 6px; }
+
+        .expo-ip-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 700; display: block; margin: 10px 0 6px; }
 
         .expo-ip-input {
             background: rgba(255,255,255,0.04);
@@ -840,10 +863,11 @@
             border: 1px solid var(--border);
             border-radius: 8px;
             padding: 7px 12px;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-family: monospace;
             color: var(--purple-light);
             margin-top: 8px;
+            word-break: break-all;
         }
 
         .expo-copy-btn {
@@ -851,6 +875,7 @@
             border: none;
             color: var(--muted);
             cursor: pointer;
+            flex-shrink: 0;
             display: flex; align-items: center;
             transition: color 0.2s;
         }
@@ -1355,16 +1380,22 @@
                     </a>
                     <div class="expo-panel">
                         <div class="qr-wrap">
-                            <img id="expo-qr" src="" alt="Mobile App QR" style="width:120px;height:120px;display:block;">
+                            <div id="qr-canvas">
+                                <div class="qr-loading">
+                                    <div class="qr-spinner"></div>
+                                    <span>Generating QR...</span>
+                                </div>
+                            </div>
                         </div>
-                        <span class="expo-ip-label">Scan to Open on Mobile or enter Expo URL</span>
-                        <input type="text" id="local-ip" class="expo-ip-input" placeholder="e.g. ./mobile/ or exp://...">
+                        <span class="expo-url-label">📱 Scan with GitHub Mobile / Camera App</span>
                         <div class="expo-url-display">
-                            <span id="expo-url">./mobile/</span>
-                            <button class="expo-copy-btn" onclick="copyExpoUrl()">
-                                <i data-lucide="copy" style="width:12px;height:12px;"></i>
+                            <span id="expo-url" style="flex:1;">Loading...</span>
+                            <button class="expo-copy-btn" onclick="copyExpoUrl()" title="Copy URL">
+                                <i data-lucide="copy" style="width:13px;height:13px;"></i>
                             </button>
                         </div>
+                        <span class="expo-ip-label">Custom Expo URL (optional)</span>
+                        <input type="text" id="local-ip" class="expo-ip-input" placeholder="e.g. 192.168.1.5 or exp://...">
                     </div>
                     <a id="expo-link" href="./mobile/" class="gw-btn-secondary">
                         <i data-lucide="external-link" style="width:14px;height:14px;"></i> Open in New Tab
@@ -1560,35 +1591,65 @@
 
     // ── EXPO / MOBILE QR SETUP ──
     const localIpInput = document.getElementById('local-ip');
-    const qrImg = document.getElementById('expo-qr');
-    const urlCode = document.getElementById('expo-url');
+    const qrCanvas  = document.getElementById('qr-canvas');
+    const urlCode   = document.getElementById('expo-url');
     const launchLink = document.getElementById('expo-link');
 
+    // Build the canonical absolute URL for the mobile web app hosted on GitHub Pages
     function getDirectMobileUrl() {
-        const path = window.location.pathname.replace(/\/index\.html$/, '').replace(/\/$/, '');
-        return window.location.origin + path + '/mobile/';
+        // Strip trailing slash and any index.html, then append /mobile/
+        let pathname = window.location.pathname
+            .replace(/\/index\.html$/i, '')
+            .replace(/\/$/, '');
+        // Ensure we don't double-up slashes
+        return window.location.origin + pathname + '/mobile/';
     }
 
     function buildExpoUrl(host) {
         host = (host || '').trim();
-        if (!host || host === './mobile/' || host === 'mobile') return getDirectMobileUrl();
+        // Empty or default shorthand → use the real deployed mobile URL
+        if (!host) return getDirectMobileUrl();
+        // Already a full URL
         if (host.startsWith('http://') || host.startsWith('https://') || host.startsWith('exp://')) return host;
+        // Looks like an ngrok / expo.dev tunnel or has a port → make it an exp:// URL
         if (host.includes('.ngrok') || host.includes('expo.dev') || host.includes(':'))
-            return `exp://${host.replace(/^exp:\/\//, '')}`;
-        return `exp://${host}:8081`;
+            return 'exp://' + host.replace(/^exp:\/\//, '');
+        // Bare IP → assume default Expo port
+        return 'exp://' + host + ':8081';
     }
+
+    let _qrInstance = null;
 
     function updateExpoQR(host) {
         const url = buildExpoUrl(host);
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(url)}&bgcolor=ffffff&color=000000&margin=4`;
         urlCode.textContent = url;
         launchLink.href = url;
+
+        // Clear previous QR
+        qrCanvas.innerHTML = '';
+
+        // Generate new QR client-side (no external API needed)
+        try {
+            _qrInstance = new QRCode(qrCanvas, {
+                text: url,
+                width: 160,
+                height: 160,
+                colorDark: '#1a1a2e',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        } catch (err) {
+            // Fallback: show the URL as text if QRCode lib somehow failed
+            qrCanvas.innerHTML = '<div style="width:160px;height:160px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:#666;padding:8px;word-break:break-all;">' + url + '</div>';
+        }
     }
 
-    localIpInput.value = './mobile/';
-    updateExpoQR('./mobile/');
+    // Initialise with the real deployed URL
+    updateExpoQR('');
 
-    localIpInput.addEventListener('input', e => updateExpoQR(e.target.value));
+    localIpInput.addEventListener('input', e => {
+        updateExpoQR(e.target.value);
+    });
 
     function copyExpoUrl() {
         copyText(urlCode.textContent, 'Mobile App URL copied!');
