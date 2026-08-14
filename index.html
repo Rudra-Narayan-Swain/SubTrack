@@ -1595,26 +1595,19 @@
     const urlCode   = document.getElementById('expo-url');
     const launchLink = document.getElementById('expo-link');
 
-    // Build the canonical absolute URL for the mobile web app hosted on GitHub Pages
-    function getDirectMobileUrl() {
-        // Strip trailing slash and any index.html, then append /mobile/
-        let pathname = window.location.pathname
-            .replace(/\/index\.html$/i, '')
-            .replace(/\/$/, '');
-        // Ensure we don't double-up slashes
-        return window.location.origin + pathname + '/mobile/';
-    }
+    // Hardcoded deployed GitHub Pages URL — never changes, always correct
+    const MOBILE_APP_URL = 'https://Rudra-Narayan-Swain.github.io/SubTrack/mobile/';
 
     function buildExpoUrl(host) {
         host = (host || '').trim();
-        // Empty or default shorthand → use the real deployed mobile URL
-        if (!host) return getDirectMobileUrl();
+        // Empty → always use the real deployed SubTrack mobile URL
+        if (!host) return MOBILE_APP_URL;
         // Already a full URL
         if (host.startsWith('http://') || host.startsWith('https://') || host.startsWith('exp://')) return host;
         // Looks like an ngrok / expo.dev tunnel or has a port → make it an exp:// URL
         if (host.includes('.ngrok') || host.includes('expo.dev') || host.includes(':'))
             return 'exp://' + host.replace(/^exp:\/\//, '');
-        // Bare IP → assume default Expo port
+        // Bare IP → assume default Expo port 8081
         return 'exp://' + host + ':8081';
     }
 
@@ -1628,7 +1621,7 @@
         // Clear previous QR
         qrCanvas.innerHTML = '';
 
-        // Generate new QR client-side (no external API needed)
+        // Generate QR client-side — no external API, always works
         try {
             _qrInstance = new QRCode(qrCanvas, {
                 text: url,
@@ -1639,12 +1632,12 @@
                 correctLevel: QRCode.CorrectLevel.M
             });
         } catch (err) {
-            // Fallback: show the URL as text if QRCode lib somehow failed
+            // Fallback: show URL as text
             qrCanvas.innerHTML = '<div style="width:160px;height:160px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:#666;padding:8px;word-break:break-all;">' + url + '</div>';
         }
     }
 
-    // Initialise with the real deployed URL
+    // Initialise — QR points to the real deployed SubTrack mobile app
     updateExpoQR('');
 
     localIpInput.addEventListener('input', e => {
