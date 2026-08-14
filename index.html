@@ -1386,7 +1386,7 @@
                         </div>
                         <span class="expo-url-label">📱 Scan with Expo Go App</span>
                         <div class="expo-url-display">
-                            <span id="expo-url" style="flex:1;">https://expo.dev/@rudra-narayan-swain/subtrack</span>
+                            <span id="expo-url" style="flex:1;">exp://exp.host/@rudra-narayan-swain/subtrack</span>
                             <button class="expo-copy-btn" onclick="copyExpoUrl()" title="Copy URL">
                                 <i data-lucide="copy" style="width:13px;height:13px;"></i>
                             </button>
@@ -1585,36 +1585,35 @@
     recalculate();
 
     // ── EXPO / MOBILE QR SETUP ──
-    const qrCanvas  = document.getElementById('qr-canvas');
-    const urlCode   = document.getElementById('expo-url');
+    const qrCanvas   = document.getElementById('qr-canvas');
+    const urlCode    = document.getElementById('expo-url');
     const launchLink = document.getElementById('expo-link');
 
-    // The published Expo project URL — scan with Expo Go on Android/iOS
-    const EXPO_PROJECT_URL = 'https://expo.dev/@rudra-narayan-swain/subtrack';
+    // exp:// deep-link protocol URL — when scanned by Expo Go or phone camera, opens Expo Go directly
+    const EXPO_QR_URL = 'exp://exp.host/@rudra-narayan-swain/subtrack';
+    const EXPO_WEB_URL = 'https://expo.dev/@rudra-narayan-swain/subtrack';
 
     // Generate the QR code client-side — no external API, always works
     (function initQR() {
         qrCanvas.innerHTML = '';
         try {
             new QRCode(qrCanvas, {
-                text: EXPO_PROJECT_URL,
-                width: 160,
-                height: 160,
-                colorDark: '#1a1a2e',
+                text: EXPO_QR_URL,
+                width: 170,
+                height: 170,
+                colorDark: '#0e0e12',
                 colorLight: '#ffffff',
                 correctLevel: QRCode.CorrectLevel.M
             });
         } catch (err) {
-            // Fallback: show URL as text if library fails
-            qrCanvas.innerHTML = '<div style="width:160px;height:160px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:#666;padding:8px;word-break:break-all;">' + EXPO_PROJECT_URL + '</div>';
+            qrCanvas.innerHTML = '<div style="width:170px;height:170px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:#666;padding:8px;word-break:break-all;">' + EXPO_QR_URL + '</div>';
         }
-        // Sync URL display and link (already set in HTML, but keep in sync)
-        if (urlCode) urlCode.textContent = EXPO_PROJECT_URL;
-        if (launchLink) launchLink.href = EXPO_PROJECT_URL;
+        if (urlCode) urlCode.textContent = EXPO_QR_URL;
+        if (launchLink) launchLink.href = EXPO_WEB_URL;
     })();
 
     function copyExpoUrl() {
-        copyText(EXPO_PROJECT_URL, 'Expo URL copied!');
+        copyText(EXPO_QR_URL, 'Expo URL copied!');
     }
 
     // ── PORT STATUS CHECKER ──
