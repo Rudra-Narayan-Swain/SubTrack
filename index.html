@@ -1370,14 +1370,11 @@
                         <div class="gw-title">Mobile App</div>
                     </div>
                     <div class="status-pill online" id="status-expo">
-                        <span class="status-dot"></span>Direct Web Ready
+                        <span class="status-dot"></span>Expo Go Ready
                     </div>
                 </div>
-                <p class="gw-desc">Cross-platform mobile subscription manager. Scan the QR code or click below to launch directly in your mobile browser with zero terminal or setup required.</p>
+                <p class="gw-desc">Native mobile subscription manager built with React Native & Expo. Scan the QR code below with <strong style="color:#fff;">Expo Go</strong> to launch instantly on Android or iOS.</p>
                 <div class="gw-actions">
-                    <a href="./mobile/" class="gw-btn-primary" style="margin-bottom: 8px;">
-                        <i data-lucide="rocket" style="width:14px;height:14px;"></i> Direct Launch Mobile App
-                    </a>
                     <div class="expo-panel">
                         <div class="qr-wrap">
                             <div id="qr-canvas">
@@ -1387,18 +1384,16 @@
                                 </div>
                             </div>
                         </div>
-                        <span class="expo-url-label">📱 Scan with GitHub Mobile / Camera App</span>
+                        <span class="expo-url-label">📱 Scan with Expo Go App</span>
                         <div class="expo-url-display">
-                            <span id="expo-url" style="flex:1;">Loading...</span>
+                            <span id="expo-url" style="flex:1;">https://expo.dev/@rudra-narayan-swain/subtrack</span>
                             <button class="expo-copy-btn" onclick="copyExpoUrl()" title="Copy URL">
                                 <i data-lucide="copy" style="width:13px;height:13px;"></i>
                             </button>
                         </div>
-                        <span class="expo-ip-label">Custom Expo URL (optional)</span>
-                        <input type="text" id="local-ip" class="expo-ip-input" placeholder="e.g. 192.168.1.5 or exp://...">
                     </div>
-                    <a id="expo-link" href="./mobile/" class="gw-btn-secondary">
-                        <i data-lucide="external-link" style="width:14px;height:14px;"></i> Open in New Tab
+                    <a id="expo-link" href="https://expo.dev/@rudra-narayan-swain/subtrack" target="_blank" class="gw-btn-primary">
+                        <i data-lucide="external-link" style="width:14px;height:14px;"></i> Open in Expo Go
                     </a>
                 </div>
             </div>
@@ -1590,41 +1585,19 @@
     recalculate();
 
     // ── EXPO / MOBILE QR SETUP ──
-    const localIpInput = document.getElementById('local-ip');
     const qrCanvas  = document.getElementById('qr-canvas');
     const urlCode   = document.getElementById('expo-url');
     const launchLink = document.getElementById('expo-link');
 
-    // Hardcoded deployed GitHub Pages URL — never changes, always correct
-    const MOBILE_APP_URL = 'https://Rudra-Narayan-Swain.github.io/SubTrack/mobile/';
+    // The published Expo project URL — scan with Expo Go on Android/iOS
+    const EXPO_PROJECT_URL = 'https://expo.dev/@rudra-narayan-swain/subtrack';
 
-    function buildExpoUrl(host) {
-        host = (host || '').trim();
-        // Empty → always use the real deployed SubTrack mobile URL
-        if (!host) return MOBILE_APP_URL;
-        // Already a full URL
-        if (host.startsWith('http://') || host.startsWith('https://') || host.startsWith('exp://')) return host;
-        // Looks like an ngrok / expo.dev tunnel or has a port → make it an exp:// URL
-        if (host.includes('.ngrok') || host.includes('expo.dev') || host.includes(':'))
-            return 'exp://' + host.replace(/^exp:\/\//, '');
-        // Bare IP → assume default Expo port 8081
-        return 'exp://' + host + ':8081';
-    }
-
-    let _qrInstance = null;
-
-    function updateExpoQR(host) {
-        const url = buildExpoUrl(host);
-        urlCode.textContent = url;
-        launchLink.href = url;
-
-        // Clear previous QR
+    // Generate the QR code client-side — no external API, always works
+    (function initQR() {
         qrCanvas.innerHTML = '';
-
-        // Generate QR client-side — no external API, always works
         try {
-            _qrInstance = new QRCode(qrCanvas, {
-                text: url,
+            new QRCode(qrCanvas, {
+                text: EXPO_PROJECT_URL,
                 width: 160,
                 height: 160,
                 colorDark: '#1a1a2e',
@@ -1632,20 +1605,16 @@
                 correctLevel: QRCode.CorrectLevel.M
             });
         } catch (err) {
-            // Fallback: show URL as text
-            qrCanvas.innerHTML = '<div style="width:160px;height:160px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:#666;padding:8px;word-break:break-all;">' + url + '</div>';
+            // Fallback: show URL as text if library fails
+            qrCanvas.innerHTML = '<div style="width:160px;height:160px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:#666;padding:8px;word-break:break-all;">' + EXPO_PROJECT_URL + '</div>';
         }
-    }
-
-    // Initialise — QR points to the real deployed SubTrack mobile app
-    updateExpoQR('');
-
-    localIpInput.addEventListener('input', e => {
-        updateExpoQR(e.target.value);
-    });
+        // Sync URL display and link (already set in HTML, but keep in sync)
+        if (urlCode) urlCode.textContent = EXPO_PROJECT_URL;
+        if (launchLink) launchLink.href = EXPO_PROJECT_URL;
+    })();
 
     function copyExpoUrl() {
-        copyText(urlCode.textContent, 'Mobile App URL copied!');
+        copyText(EXPO_PROJECT_URL, 'Expo URL copied!');
     }
 
     // ── PORT STATUS CHECKER ──
@@ -1669,13 +1638,12 @@
     function runChecks() {
         checkPort('http://localhost:3000', 'status-user');
         checkPort('http://localhost:3001', 'status-admin');
-        const expoHost = localIpInput.value.trim().replace(/^exp:\/\//, '');
-        const expoCheck = expoHost.includes(':') ? `http://${expoHost}` : `http://${expoHost}:8081`;
-        checkPort(expoCheck, 'status-expo');
+        // Expo Go status badge stays "Expo Go Ready" — no localhost check needed
     }
 
     runChecks();
     setInterval(runChecks, 12000);
+
 </script>
 </body>
 </html>
