@@ -49,7 +49,7 @@ git add .
 
 :: Commit files
 echo [5/5] Committing and pushing files...
-git commit -m "Fix Expo Go white screen buffering issue and update configuration"
+git commit -m "Fix duplicate QR code rendering on landing page"
 git push -u origin main
 
 echo.

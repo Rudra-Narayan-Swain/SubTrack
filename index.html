@@ -816,8 +816,9 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
         .qr-wrap:hover { transform: scale(1.04); box-shadow: 0 8px 30px rgba(124,58,237,0.25); }
-        #qr-canvas { display: block; border-radius: 4px; }
-        #qr-canvas canvas { display: block !important; }
+        #qr-canvas { display: flex; justify-content: center; align-items: center; border-radius: 4px; }
+        #qr-canvas canvas { display: none !important; }
+        #qr-canvas img { display: block !important; border-radius: 4px; width: 170px; height: 170px; margin: 0 auto; }
 
         .qr-loading {
             width: 160px; height: 160px;
